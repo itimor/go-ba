@@ -83,7 +83,7 @@ func main() {
 	if err != nil {
 		app.Logger().Fatalf("orm failed to initialized User table: %v", err)
 	}
-	app.Post("/add", func(ctx iris.Context) {
+	app.Post("/create", func(ctx iris.Context) {
 		user := &User{}
 		if err := ctx.ReadJSON(user); err != nil {
 			ctx.StatusCode(iris.StatusBadRequest)
@@ -113,9 +113,9 @@ func main() {
 		ctx.Writef("user delete: %#v", user)
 	})
 	app.Put("/update/{id:int}", func(ctx iris.Context) {
-		// id, _ := ctx.Params().GetInt("id")
-		// //int到int64
-		// id64 := int64(id)
+		id, _ := ctx.Params().GetInt("id")
+		//int到int64
+		id64 := int64(id)
 
 		user := &User{}
 		if err := ctx.ReadJSON(user); err != nil {
@@ -123,10 +123,10 @@ func main() {
 			ctx.WriteString(err.Error())
 			return
 		}
-		orm.Update(user)
-		ctx.Writef("user update: %#v", user)
+		orm.Id(id64).Update(user)
+		ctx.Writef("user update: %#v", orm.Id(id64))
 	})
-	// http://localhost:8080/add
+	// http://localhost:8080/create
 	// http://localhost:8080/get/id:int
 	// http://localhost:8080/delete/id:int
 	// http://localhost:8080/update/id:int
