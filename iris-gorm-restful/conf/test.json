@@ -1,0 +1,13 @@
+{
+    "app": {
+        "ServerPort": 8080,
+        "LogLevel": "debug",
+        "Secret": "xxoo-xxoo-xxoo",
+        "IgnoreURLs": ["/", "/home", "/user/login", "/user/registe"],
+        "JWTTimeout": 600
+    },
+    "db": {
+        "Engine": "sqlite",
+        "DBfile": "iris-gorm-restful/test.db"
+    }
+}
