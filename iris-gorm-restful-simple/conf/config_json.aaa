@@ -1,0 +1,64 @@
+package conf
+
+import (
+	"fmt"
+	"io/ioutil"
+
+	jsoniter "github.com/json-iterator/go"
+)
+
+const (
+	TestConfigFilePath = "./conf/test.json"
+	ProdConfigFilePath = "./conf/prod.json"
+)
+
+type AppConfigStruct struct {
+	ServerPort string   `json:"serverport"`
+	LogLevel   string   `json:"loglevel"`
+	Secret     string   `json:"secert"`
+	IgnoreURLs []string `json:"serverport"`
+	JWTTimeout int      `json:"jwttimeout"`
+}
+
+type TestDBConfigStruct struct {
+	DriverName string `json:"serverport"`
+	DBFile     string `json:"dbfile"`
+	Charset    string `json:"charset"`
+}
+
+type ProdDBConfigStruct struct {
+	DriverName string `json:"driver_name"`
+	User       string `json:"user"`
+	Password   string `json:"password"`
+	Host       string `json:"data_ip"`
+	Port       string `json:"data_port"`
+	Charset    string `json:"charset"`
+}
+
+// 测试系统配置
+type TestConfigStruct struct {
+	App AppConfigStruct
+	DB  TestDBConfigStruct
+}
+
+// 线上系统配置
+type ProdConfigStruct struct {
+	App AppConfigStruct
+	DB  ProdDBConfigStruct
+}
+
+var Sysconfig = &TestConfigStruct{}
+
+func conf() {
+	//指定对应的json配置文件
+	b, err := ioutil.ReadFile(TestConfigFilePath)
+	if err != nil {
+		panic("Sys config read err")
+	}
+	err = jsoniter.Unmarshal(b, Sysconfig)
+	fmt.Printf(": %#v", &Sysconfig)
+	if err != nil {
+		panic(err)
+	}
+
+}

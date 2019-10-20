@@ -1,13 +1,17 @@
 {
-    "app": {
+    "App": {
         "ServerPort": 8080,
         "LogLevel": "debug",
         "Secret": "xxoo-xxoo-xxoo",
         "IgnoreURLs": ["/", "/home", "/user/login", "/user/registe"],
         "JWTTimeout": 600
     },
-    "db": {
-        "Engine": "sqlite",
-        "DBfile": "iris-gorm-restful/test.db"
+    "DB": {
+        "DriverName": "mysql",
+        "User": "gogoba",
+        "Pasword": "123456",
+        "Host": "localhost",
+        "Port": "3306",
+        "Charset": "utf-8"
     }
 }

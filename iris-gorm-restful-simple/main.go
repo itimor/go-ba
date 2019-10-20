@@ -1,10 +1,11 @@
 package main
 
 import (
-	"flag"
-
 	"./conf"
-	"./routes"
+
+	"flag"
+	"fmt"
+
 	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris"
 )
@@ -12,11 +13,13 @@ import (
 func main() {
 	flag.Parse()
 	app := newApp()
-	routes.InitRouter(app)
-	err := app.Run(iris.Addr(":"+conf.Sysconfig.Port), iris.WithoutServerError(iris.ErrServerClosed))
-	if err != nil {
-		panic(err)
-	}
+
+	// 读取“./config.json”配置文件
+	fmt.Println("Port", conf.Sysconfig.App.Port)
+	fmt.Println("JWTTimeout", conf.Sysconfig.App.JWTTimeout)
+	fmt.Println("Charset", conf.Sysconfig.DB.Charset)
+
+	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 }
 
 func newApp() *iris.Application {

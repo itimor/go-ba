@@ -19,6 +19,7 @@ import (
        到你的PATH env变量。
    手册: http://xorm.io/docs/
 */
+
 //User是我们的用户表结构。
 type User struct {
 	ID        int64     // xorm默认自动递增
@@ -30,6 +31,9 @@ type User struct {
 }
 
 func main() {
+	// 数据库时区问题
+	time.LoadLocation("Asia/Shanghai")
+
 	app := iris.New()
 	// 默认日志
 	// app.Logger().SetLevel("debug")
@@ -72,7 +76,9 @@ func main() {
 		ctx.Writef("My Custom error page")
 	})
 
-	orm, err := xorm.NewEngine("sqlite3", "./test.db")
+	orm, err := xorm.NewEngine("sqlite3", "test.db")
+	// orm, err := xorm.NewEngine("mysql", "username:password@tcp(host:3306)/dbname?charset=utf8")
+	// orm, err := xorm.NewEngine("postgres", "user=test password=test123 dbname=testdb host=127.0.0.1 port=5432 sslmode=disable")
 	if err != nil {
 		app.Logger().Fatalf("orm failed to initialized: %v", err)
 	}
@@ -123,8 +129,9 @@ func main() {
 			ctx.WriteString(err.Error())
 			return
 		}
+
 		orm.Id(id64).Update(user)
-		ctx.Writef("user update: %#v", orm.Id(id64))
+		ctx.Writef("user update: %#v", user)
 	})
 	// http://localhost:8080/create
 	// http://localhost:8080/get/id:int

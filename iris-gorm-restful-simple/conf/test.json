@@ -1,0 +1,15 @@
+{
+    "App": {
+        "ServerPort": "8080",
+        "LogLevel": "debug",
+        "Secret": "xxoo-xxoo-xxoo",
+        "IgnoreURLs": ["/", "/home", "/user/login", "/user/registe"],
+        "JWTTimeout": "600",
+        "Port": "8848"
+    },
+    "DB": {
+        "DriverName": "sqlite",
+        "DBFile": "iris-gorm-restful/test.db",
+        "Charset": "utf-8"
+    }
+}
