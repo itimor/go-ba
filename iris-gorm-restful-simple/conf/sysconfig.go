@@ -6,11 +6,16 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+const (
+	TestConfigFilePath = "./conf/test.json"
+	ProdConfigFilePath = "./conf/prod.json"
+)
+
 var Sysconfig = &sysconfig{}
 
 func init() {
 	//指定对应的json配置文件
-	b, err := ioutil.ReadFile("config.json")
+	b, err := ioutil.ReadFile(TestConfigFilePath)
 	if err != nil {
 		panic("Sys config read err")
 	}
@@ -26,7 +31,6 @@ type AppConfigStruct struct {
 	Secret     string   `json:"Secret"`
 	IgnoreURLs []string `json:"IgnoreURLs"`
 	JWTTimeout string   `json:"JWTTimeout"`
-	Port       string   `json:"Port"`
 }
 
 type TestDBConfigStruct struct {
