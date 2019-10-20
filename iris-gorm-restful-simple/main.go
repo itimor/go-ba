@@ -1,7 +1,9 @@
 package main
 
 import (
-	"./conf"
+	"fmt"
+
+	"./config"
 
 	"flag"
 
@@ -13,7 +15,9 @@ func main() {
 	flag.Parse()
 	app := newApp()
 
-	app.Run(iris.Addr(":"+conf.Sysconfig.App.ServerPort), iris.WithoutServerError(iris.ErrServerClosed))
+	server_port := config.Tomlconfig.Get("app.server_port").(string)
+	fmt.Printf("format:", server_port)
+	app.Run(iris.Addr(":"+server_port), iris.WithoutServerError(iris.ErrServerClosed))
 }
 
 func newApp() *iris.Application {
