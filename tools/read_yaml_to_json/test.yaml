@@ -10,11 +10,11 @@ metadata:
       nodeName: 172.16.91.21
       role: master
     config2:
-       address: kafka-operator-labels-01
-       id: kafka-operator-labels-02
-       name: mysql-example-cluster-slave
-       nodeName: 172.16.91.110
-       role: slave
+      address: kafka-operator-labels-01
+      id: kafka-operator-labels-02
+      name: mysql-example-cluster-slave
+      nodeName: 172.16.91.110
+      role: slave
 spec:
   replicas: 1
   name: kafka-controller

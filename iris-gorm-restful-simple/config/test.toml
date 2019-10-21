@@ -1,11 +1,11 @@
-[app]
+[server]
 server_port="8000"
 debug=true
 secert = "xxoo-xxoo-xxoo"
 ignore_urls = ["/", "/home", "/user/login", "/user/registe"]
 jwt_timeout = "600"
 
-[db]
+[database]
 driver = "sqlite"
 file="iris-gorm-restful-simple/test.db"
 charset="utf-8"

@@ -7,16 +7,18 @@ import (
 )
 
 const (
-	TomlConfigFilePath = "./config/test.toml"
+	ConfigFilePath = "./config/test.toml"
 )
 
 var (
-	Tomlconfig = ParseToml()
+	Conf = new()
 )
 
-// toml 不需要映射 struct
-func ParseToml() *toml.Tree {
-	config, err := toml.LoadFile(TomlConfigFilePath)
+/**
+ * Set parse Toml file
+ */
+func new() *toml.Tree {
+	config, err := toml.LoadFile(ConfigFilePath)
 
 	if err != nil {
 		fmt.Println("TomlErr ", err.Error())
