@@ -1,7 +1,8 @@
 package main
 
 import (
-	"./config"
+	"./database"
+	"./models"
 
 	"flag"
 
@@ -15,9 +16,7 @@ func main() {
 	flag.Parse()
 	app := newApp()
 
-	serverPort := config.Conf.Get("server.server_port").(string)
-
-	err := app.Run(iris.Addr(":"+serverPort), iris.WithoutServerError(iris.ErrServerClosed))
+	err := app.Run(iris.Addr(":8000"), iris.WithoutServerError(iris.ErrServerClosed))
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +39,17 @@ func newApp() *iris.Application {
 
 	})
 
-	// 设置跨域
+	// migrate db
+	database.DB.AutoMigrate(
+		&models.User{},
+		&models.Role{},
+	)
+
+	iris.RegisterOnInterrupt(func() {
+		_ = database.DB.Close()
+	})
+
+	// allow cors
 	crs := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
 		AllowCredentials: true,
@@ -48,5 +57,6 @@ func newApp() *iris.Application {
 	})
 	app.Use(crs)
 	app.AllowMethods(iris.MethodOptions)
+
 	return app
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ConfigFilePath = "./config/test.toml"
+	ConfigFilePath = "./config/config.toml"
 )
 
 var (

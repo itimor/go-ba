@@ -1,0 +1,15 @@
+[server]
+debug = true
+secert = "xxoo-xxoo-xxoo"
+ignore_urls = ["/", "/home", "/user/login", "/user/registe"]
+jwt_timeout = 7   # days
+
+[test]
+[test.database]
+driver = "sqlite3"
+connect = "test.db"
+
+[prod]
+[prod.database]
+driver = "mysql"
+connect = "iris:iris@tcp(localhost:3306)/iris?charset=utf8&parseTime=True"

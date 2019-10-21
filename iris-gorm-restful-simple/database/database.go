@@ -21,12 +21,12 @@ var (
 
 func InitDB() *gorm.DB {
 
+	getAppEnv := "test"
 	// if getAppEnv() == "test" {
+	// } else {}
 
-	// } else {
-	driver := config.Conf.Get("database.driver").(string)
-	configTree := config.Conf.Get(driver).(*toml.Tree)
-
+	configTree := config.Conf.Get(getAppEnv + ".database").(*toml.Tree)
+	driver := configTree.Get("driver").(string)
 	connect := configTree.Get("connect").(string)
 
 	DB, err := gorm.Open(driver, connect)
