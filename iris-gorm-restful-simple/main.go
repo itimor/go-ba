@@ -1,12 +1,15 @@
 package main
 
 import (
+	"os"
+
 	"./database"
 	"./models"
 
 	"flag"
 
 	"github.com/iris-contrib/middleware/cors"
+	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -23,6 +26,16 @@ func main() {
 }
 
 func newApp() *iris.Application {
+	hostname, _ := os.Hostname()
+	var env string
+	if hostname == "wahaha" {
+		env = "prod"
+		golog.Info("进入线上环境")
+	} else {
+		env = "test"
+		golog.Info("进入测试环境")
+	}
+
 	app := iris.New()
 	app.Configure(iris.WithOptimizations)
 
@@ -57,6 +70,9 @@ func newApp() *iris.Application {
 	})
 	app.Use(crs)
 	app.AllowMethods(iris.MethodOptions)
+
+	//初始化系统 账号 权限 角色
+	models.CreateSystemData(env)
 
 	return app
 }

@@ -5,6 +5,9 @@ ignore_urls = ["/", "/home", "/user/login", "/user/registe"]
 jwt_timeout = 7   # days
 
 [test]
+user = 'admin'
+pass = 'qwert@12345'
+role = 'admin'
 [test.database]
 driver = "sqlite3"
 connect = "test.db"

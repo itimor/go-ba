@@ -3,12 +3,9 @@ package models
 import (
 	"../database"
 
-	"fmt"
 	"time"
 
-	"github.com/beego/bee/config"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/iris-contrib/middleware/jwt"
 	"github.com/jameskeane/bcrypt"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/golog"
@@ -16,12 +13,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"type:varchar(50);not null;unique"`
-	Password string `gorm:"type:varchar(200);not null"`
-	Avatar   string
-	Roles    []Role `gorm:"many2many:user_roles;"`
-	IsActive bool   `gorm:"default:true"`
-	IsAdmin  bool   `gorm:"default:false"`
+	Username string  `gorm:"type:varchar(50);not null;unique"`
+	Password string  `gorm:"type:varchar(200);not null"`
+	Avatar   string  `gorm:"default:'https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg'"`
+	Roles    []*Role `gorm:"many2many:user_roles;"`
+	IsActive bool    `gorm:"default:true"`
 }
 
 type UserJson struct {
@@ -37,6 +33,7 @@ type UserJson struct {
  * @param  {[type]}       user  *User [description]
  */
 func GetUserById(id uint) (user *User, err error) {
+	user = new(User)
 	user.ID = id
 
 	if err = database.DB.Preload("Role").First(user).Error; err != nil {
@@ -52,13 +49,13 @@ func GetUserById(id uint) (user *User, err error) {
  * @param  {[type]}       user  *User [description]
  */
 func GetUserByUserName(username string) (user *User, err error) {
-	user := &User{Username: username}
-
+	user = new(User)
+	user.Username = username
 	if err := database.DB.Preload("Role").First(user).Error; err != nil {
 		golog.Error("GetUserByUserNameErr:%s", err)
 	}
 
-	return nil, user
+	return
 }
 
 /**
@@ -72,6 +69,80 @@ func DeleteUserById(id uint) {
 	if err := database.DB.Delete(u).Error; err != nil {
 		golog.Error("DeleteUserByIdErr:%s", err)
 	}
+}
+
+/**
+ * 创建
+ * @method CreateUser
+ * @param  {[type]} kw string [description]
+ */
+func CreateUser(aul *UserJson, roleNames []string) (user *User, err error) {
+	salt, _ := bcrypt.Salt(10)
+	hash, _ := bcrypt.Hash(aul.Password, salt)
+
+	user = new(User)
+	user.Username = aul.Username
+	user.Password = string(hash)
+	user.Avatar = aul.Avatar
+
+	if err := database.DB.Create(user).Error; err != nil {
+		golog.Error("CreateUserErr:%s", err)
+	}
+
+	roles := []Role{}
+	database.DB.Where("name in (?)", roleNames).Find(&roles)
+	golog.Info(roles)
+	if err := database.DB.Model(&user).Association("Roles").Append(roles).Error; err != nil {
+		golog.Error("AppendRolesErr:%s", err)
+	}
+
+	return
+}
+
+/**
+ * 更新
+ * @method UpdateUser
+ * @param  {[type]} kw string [description]
+ * @param  {[type]} id int    [description]
+ */
+func UpdateUser(uj *UserJson, id uint, roleNames []string) (user *User, err error) {
+	user, _ = GetUserById(id)
+	user.Username = uj.Username
+	user.Avatar = uj.Avatar
+
+	if err = database.DB.Model(user).Updates(uj).Error; err != nil {
+		golog.Error("UpdateUserErr:%s", err)
+	}
+
+	roles := []Role{}
+	database.DB.Where("name in (?)", roleNames).Find(&roles)
+	golog.Info(roles)
+	if err := database.DB.Model(&user).Association("Roles").Append(roles).Error; err != nil {
+		golog.Error("AppendRolesErr:%s", err)
+	}
+
+	return
+}
+
+/**
+ * 更新密码
+ * @method UpdateUserPassword
+ * @param  {[type]} password string [description]
+ * @param  {[type]} id int    [description]
+ */
+func UpdateUserPassword(password string, id uint) (user *User, err error) {
+	salt, _ := bcrypt.Salt(10)
+	hash, _ := bcrypt.Hash(password, salt)
+
+	user = new(User)
+	user.ID = id
+	user.Password = string(hash)
+
+	err = database.DB.Model(user).Updates(user).Error
+	if err != nil {
+		golog.Error("UpdateUserPasswordErr:%s", err)
+	}
+	return
 }
 
 /**
@@ -91,51 +162,16 @@ func GetAllUsers(name, orderBy string, offset, limit int) (users []*User) {
 }
 
 /**
- * 创建
- * @method CreateUser
- * @param  {[type]} kw string [description]
- * @param  {[type]} cp int    [description]
- * @param  {[type]} mp int    [description]
+ * 校验用户登录
+ * @method UserAdminCheckLogin
+ * @param  {[type]}  username string [description]
  */
-func CreateUser(aul *UserJson) (user *User) {
-	salt, _ := bcrypt.Salt(10)
-	hash, _ := bcrypt.Hash(aul.Password, salt)
-
-	user = new(User)
-	user.Username = aul.Username
-	user.Password = hash
-	user.Avatar = aul.Avatar
-	user.Roles = aul.Roles
-
-	if err := database.DB.Create(user).Error; err != nil {
-		golog.Error("CreateUserErr:%s", err)
+func UserAdminCheckLogin(username string) User {
+	u := User{}
+	if err := database.DB.Where("username = ?", username).First(&u).Error; err != nil {
+		golog.Error("UserAdminCheckLoginErr:%s", err)
 	}
-
-	return
-}
-
-/**
- * 更新
- * @method UpdateUser
- * @param  {[type]} kw string [description]
- * @param  {[type]} cp int    [description]
- * @param  {[type]} mp int    [description]
- */
-func UpdateUser(uj *UserJson, id uint) *User {
-	salt, _ := bcrypt.Salt(10)
-	hash, _ := bcrypt.Hash(uj.Password, salt)
-
-	user := new(User)
-	user.ID = id
-	uj.Password = hash
-	user.Avatar = aul.Avatar
-	user.Roles = aul.Roles
-
-	if err := database.DB.Model(user).Updates(uj).Error; err != nil {
-		golog.Error("UpdateUserErr:%s", err)
-	}
-
-	return user
+	return u
 }
 
 /**
@@ -176,7 +212,6 @@ func CheckLogin(username, password string) (response Token, status bool, msg str
 			msg = "登陆成功"
 
 			return
-
 		} else {
 			msg = "用户名或密码错误"
 			return
@@ -199,21 +234,14 @@ func UserAdminLogout(userId uint) bool {
 *@param role_id uint
 *@return   *models.AdminUserTranform api格式化后的数据格式
  */
-func CreateSystemAdmin(roleId uint) *User {
-
-	aul := new(UserJson)
-	aul.Username = config.Conf.Get("test.LoginUserName").(string)
-	aul.Password = config.Conf.Get("test.LoginPwd").(string)
-	aul.Name = config.Conf.Get("test.LoginName").(string)
-	aul.RoleID = roleId
-
-	user := GetUserByUserName(aul.Username)
+func CreateSystemAdmin(aul *UserJson, roleNames []string) (user *User, err error) {
+	user, err = GetUserByUserName(aul.Username)
 
 	if user.ID == 0 {
-		fmt.Println("创建账号")
-		return CreateUser(aul)
+		golog.Info("创建账号")
+		return CreateUser(aul, roleNames)
 	} else {
-		fmt.Println("重复初始化账号")
-		return user
+		golog.Error("账号已存在")
+		return
 	}
 }

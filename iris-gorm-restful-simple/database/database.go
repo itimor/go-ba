@@ -21,11 +21,11 @@ var (
 
 func InitDB() *gorm.DB {
 
-	getAppEnv := "test"
-	// if getAppEnv() == "test" {
+	GetEnv := "test"
+	// if GetEnv() == "test" {
 	// } else {}
 
-	configTree := config.Conf.Get(getAppEnv + ".database").(*toml.Tree)
+	configTree := config.Conf.Get(GetEnv + ".database").(*toml.Tree)
 	driver := configTree.Get("driver").(string)
 	connect := configTree.Get("connect").(string)
 
