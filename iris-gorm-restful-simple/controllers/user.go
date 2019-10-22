@@ -83,7 +83,7 @@ func CreateUser(ctx iris.Context) {
 				fmt.Println()
 			}
 		} else {
-			u, err := models.CreateUser(aul)
+			u, _ := models.CreateUser(aul)
 
 			ctx.StatusCode(iris.StatusOK)
 			if u.ID == 0 {

@@ -3,12 +3,14 @@ package main
 import (
 	"os"
 
+	"./config"
 	"./database"
 	"./models"
+	"./routes"
 
 	"flag"
 
-	"github.com/iris-contrib/middleware/cors"
+	"github.com/betacraft/yaag/yaag"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
@@ -64,14 +66,22 @@ func newApp() *iris.Application {
 		_ = database.DB.Close()
 	})
 
-	// allow cors
-	crs := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
-		AllowCredentials: true,
-		AllowedHeaders:   []string{"*"},
+	// 加载路由
+	routes.Register(app)
+
+	//api 文档配置
+	appName := config.Conf.Get("server.name").(string)
+	appDoc := config.Conf.Get("server.apidoc").(string)
+	// appURL := config.Conf.Get("server.apiurl").(string)
+	yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.
+		On:       true,
+		DocTitle: appName,
+		DocPath:  appDoc + "/index.html", //设置绝对路径
+		BaseUrls: map[string]string{
+			"Production": "",
+			"Staging":    "",
+		},
 	})
-	app.Use(crs)
-	app.AllowMethods(iris.MethodOptions)
 
 	//初始化系统 账号 权限 角色
 	models.CreateSystemData(env)

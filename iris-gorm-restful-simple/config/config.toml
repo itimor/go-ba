@@ -1,4 +1,7 @@
 [server]
+name = 'gogobar'
+apidoc = './apidoc'
+apiurl = 'http://localhost:8000'
 debug = true
 secert = "xxoo-xxoo-xxoo"
 ignore_urls = ["/", "/home", "/user/login", "/user/registe"]
