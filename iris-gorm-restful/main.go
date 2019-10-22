@@ -1,14 +1,13 @@
 package main
 
 import (
-	"os"
-
 	"./config"
 	"./database"
 	"./models"
 	"./routes"
 
 	"flag"
+	"os"
 
 	"github.com/betacraft/yaag/yaag"
 	"github.com/kataras/golog"
@@ -39,6 +38,8 @@ func newApp() *iris.Application {
 	}
 
 	app := iris.New()
+	loglevle := config.Conf.Get("test.loglevel").(string)
+	app.Logger().SetLevel(loglevle)
 	app.Configure(iris.WithOptimizations)
 
 	app.Use(recover.New())
@@ -72,13 +73,13 @@ func newApp() *iris.Application {
 	//api 文档配置
 	appName := config.Conf.Get("server.name").(string)
 	appDoc := config.Conf.Get("server.apidoc").(string)
-	// appURL := config.Conf.Get("server.apiurl").(string)
+	appURL := config.Conf.Get("server.apiurl").(string)
 	yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.
 		On:       true,
 		DocTitle: appName,
 		DocPath:  appDoc + "/index.html", //设置绝对路径
 		BaseUrls: map[string]string{
-			"Production": "",
+			"Production": appURL,
 			"Staging":    "",
 		},
 	})

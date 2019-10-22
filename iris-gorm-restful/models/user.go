@@ -27,6 +27,9 @@ type UserJson struct {
 	Roles    []string `json:"roles" validate:"required"`
 }
 
+type UserPassword struct {
+	Password string   `json:"password" validate:"required,gte=8,lte=200"`
+}
 /**
  * 通过 id 获取 user 记录
  * @method GetUserById

@@ -25,10 +25,9 @@ func Register(api *iris.Application) {
 	home.Get("/", func(ctx iris.Context) { // 首页模块
 		_ = ctx.View("index.html")
 	})
-
-	mainDoc := api.Party("/apiDoc", crs).AllowMethods(iris.MethodOptions)
+	mainDoc := api.Party("/apidoc", crs).AllowMethods(iris.MethodOptions)
 	mainDoc.Get("/", func(ctx iris.Context) { // 首页模块
-		_ = ctx.View("/apiDoc/index.html")
+		_ = ctx.View("/apidoc/index.html")
 	})
 
 	v1 := api.Party("/v1", crs).AllowMethods(iris.MethodOptions)
@@ -46,6 +45,7 @@ func Register(api *iris.Application) {
 				users.Put("/{id:uint}", controllers.UpdateUser)
 				users.Delete("/{id:uint}", controllers.DeleteUser)
 				users.Get("/profile", controllers.GetProfile)
+				users.Patch("/changePasswd/{id:uint}", controllers.UpdateUserPassword)
 			})
 			admin.PartyFunc("/roles", func(roles router.Party) {
 				roles.Get("/", controllers.GetAllRoles)
