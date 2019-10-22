@@ -36,7 +36,7 @@ func GetUserById(id uint) (user *User, err error) {
 	user = new(User)
 	user.ID = id
 
-	if err = database.DB.First(user).Error; err != nil {
+	if err = database.DB.Preload("Roles").First(user).Error; err != nil {
 		golog.Error("GetUserByIdErr ", err)
 	}
 
@@ -51,10 +51,26 @@ func GetUserById(id uint) (user *User, err error) {
 func GetUserByUserName(username string) (user *User, err error) {
 	user = new(User)
 	user.Username = username
-	if err := database.DB.First(user).Error; err != nil {
+	if err := database.DB.Preload("Roles").First(user).Error; err != nil {
 		golog.Error("GetUserByUserNameErr ", err)
 	}
 
+	return
+}
+
+/**
+ * 获取所有的账号
+ * @method GetAllUser
+ * @param  {[type]} name string [description]
+ * @param  {[type]} username string [description]
+ * @param  {[type]} orderBy string [description]
+ * @param  {[type]} offset int    [description]
+ * @param  {[type]} limit int    [description]
+ */
+func GetAllUsers(name, orderBy string, offset, limit int) (users []*User) {
+	if err := database.GetAll(name, orderBy, offset, limit).Preload("Roles").Find(&users).Error; err != nil {
+		golog.Error("GetAllUserErr ", err)
+	}
 	return
 }
 
@@ -115,8 +131,7 @@ func UpdateUser(uj *UserJson, id uint) (user *User, err error) {
 
 	roles := []Role{}
 	database.DB.Where("name in (?)", uj.Roles).Find(&roles)
-	golog.Info(roles)
-	if err := database.DB.Model(&user).Association("Roles").Append(roles).Error; err != nil {
+	if err := database.DB.Model(&user).Association("Roles").Replace(roles).Error; err != nil {
 		golog.Error("AppendRolesErr ", err)
 	}
 
@@ -140,22 +155,6 @@ func UpdateUserPassword(password string, id uint) (user *User, err error) {
 	err = database.DB.Model(user).Updates(user).Error
 	if err != nil {
 		golog.Error("UpdateUserPasswordErr ", err)
-	}
-	return
-}
-
-/**
- * 获取所有的账号
- * @method GetAllUser
- * @param  {[type]} name string [description]
- * @param  {[type]} username string [description]
- * @param  {[type]} orderBy string [description]
- * @param  {[type]} offset int    [description]
- * @param  {[type]} limit int    [description]
- */
-func GetAllUsers(name, orderBy string, offset, limit int) (users []*User) {
-	if err := database.GetAll(name, orderBy, offset, limit).Preload("Role").Find(&users).Error; err != nil {
-		golog.Error("GetAllUserErr ", err)
 	}
 	return
 }

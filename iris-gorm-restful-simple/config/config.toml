@@ -5,7 +5,8 @@ apiurl = 'http://localhost:8000'
 debug = true
 secert = "xxoo-xxoo-xxoo"
 ignore_urls = ["/", "/home", "/user/login", "/user/registe"]
-jwt_timeout = 7   # days
+jwt_timeout = 7   # token 过期天数
+jwt_prefix = "Bearer"   # token 前缀
 
 [test]
 user = 'admin'

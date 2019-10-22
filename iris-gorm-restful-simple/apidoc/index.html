@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title> API Documentation </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>   
+    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .hidden {
+            display:none;
+        }
+        pre {
+            outline: 1px solid #ccc;
+            padding: 5px; margin: 5px;
+        }
+
+        .string { color: green; }
+        .number { color: darkorange; }
+        .boolean { color: blue; }
+        .null { color: magenta; }
+        .key { color: red; }
+
+    </style>
+    <style type="text/css">
+        pre.prettyprint {
+            border: 1px solid #ccc;
+            margin-bottom: 0;
+            padding: 9.5px;
+        }
+    </style>
+    <script>
+         
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'key';
+                    } else {
+                        cls = 'string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        function spaceJson(json){
+            var validJson = JSON.parse(json);
+            return JSON.stringify(validJson, undefined, 4);
+        }
+    </script>
+
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">gogobar</a>
+            <p class="navbar-text">Developed by Gophers at <a href="http://betacraft.co">Betacraft</a></p>
+        </div>
+            
+        
+    </div>
+    
+</nav>
+<div class="container-fluid" style="margin-top: 70px;margin-bottom: 20px;">
+    <div class="container-fluid">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+              <div class="panel-heading">Base Urls</div>
+              <div class="panel-body">
+                
+                    <p>Production : <strong></strong></p>
+                
+                    <p>Staging : <strong></strong></p>
+                
+              </div>
+            </div>    
+        <ul class="nav nav-pills nav-stacked" role="tablist">
+            
+                <li role="presentation"><a href="#0top" role="tab" data-toggle="tab">POST : /v1/api/login</a></li>
+            
+                <li role="presentation"><a href="#1top" role="tab" data-toggle="tab">POST : /v1/api/roles</a></li>
+            
+                <li role="presentation"><a href="#2top" role="tab" data-toggle="tab">GET : /v1/api/users</a></li>
+            
+                <li role="presentation"><a href="#3top" role="tab" data-toggle="tab">GET : /v1/api/users/1</a></li>
+            
+                <li role="presentation"><a href="#4top" role="tab" data-toggle="tab">POST : /v1/api/users</a></li>
+            
+                <li role="presentation"><a href="#5top" role="tab" data-toggle="tab">PUT : /v1/api/users/2</a></li>
+            
+        <ul>
+    </div>
+    <div class="col-md-8 tab-content">
+        
+        <div id="0top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  0dd3378a-6a67-4f31-bd95-882ce397de29</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-0-0" class="prettyprint">{
+	&#34;username&#34;: &#34;admin&#34;,
+	&#34;password&#34;:&#34;qwert@12345&#34;
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 0dd3378a-6a67-4f31-bd95-882ce397de29\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
+                            document.getElementById('request-body-0-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-0-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzYyODEsImlhdCI6MTU3MTczMjY4MX0.xd04Hdo89gGDEyAT183dYPSy_0nhCW4lZAPoDGGrSeI&#34;}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzYyODEsImlhdCI6MTU3MTczMjY4MX0.xd04Hdo89gGDEyAT183dYPSy_0nhCW4lZAPoDGGrSeI\"}}");
+                            document.getElementById('response-body-0-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  4aaecf80-b2de-4004-9096-d33e62753a92</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-0-1" class="prettyprint">{
+	&#34;username&#34;: &#34;admin&#34;,
+	&#34;password&#34;:&#34;qwert@12345&#34;
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 4aaecf80-b2de-4004-9096-d33e62753a92\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
+                            document.getElementById('request-body-0-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-0-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MjUsImlhdCI6MTU3MTczMjgyNX0.vspeRNrqnd5pGk4wxHznkziH_QcREVKr6I9pvkIhA34&#34;}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MjUsImlhdCI6MTU3MTczMjgyNX0.vspeRNrqnd5pGk4wxHznkziH_QcREVKr6I9pvkIhA34\"}}");
+                            document.getElementById('response-body-0-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  61dca99a-4f36-441f-969f-a159c7bd9e01</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-0-2" class="prettyprint">{
+	&#34;username&#34;: &#34;admin&#34;,
+	&#34;password&#34;:&#34;qwert@12345&#34;
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 61dca99a-4f36-441f-969f-a159c7bd9e01\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
+                            document.getElementById('request-body-0-2').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-0-2">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU&#34;}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\"}}");
+                            document.getElementById('response-body-0-2').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+        <div id="1top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  c1276580-b671-421d-9b10-0581aae4771e</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-1-0" class="prettyprint">{
+	&#34;name&#34;: &#34;test&#34;,
+	&#34;desc&#34;: &#34;测试&#34;
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" c1276580-b671-421d-9b10-0581aae4771e\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"name\": \"test\",\n\t\"desc\": \"测试\"\n}");
+                            document.getElementById('request-body-1-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-1-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}}");
+                            document.getElementById('response-body-1-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+        <div id="2top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  682074a6-4147-45e8-8132-92dbd8782c1b</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-2-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:null,&#34;IsActive&#34;:true}]}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":null,\"IsActive\":true}]}");
+                            document.getElementById('response-body-2-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  69fe3ae2-d66e-421d-8291-d9c7238d614b</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-2-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}]}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}]}");
+                            document.getElementById('response-body-2-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  fe631c83-0426-453c-bc77-a1faa03e31c8</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-2-2">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true},{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}]}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true},{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}]}");
+                            document.getElementById('response-body-2-2').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+        <div id="3top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  cf98c27d-204f-4711-a80c-0dd78d51da2a</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-3-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:null,&#34;IsActive&#34;:true}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":null,\"IsActive\":true}}");
+                            document.getElementById('response-body-3-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  9296f4ac-85fa-4208-9645-42621f26408e</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-3-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}}");
+                            document.getElementById('response-body-3-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+        <div id="4top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  e9d5d4b7-25af-4782-ab0d-5ee81aa24af3</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-4-0" class="prettyprint">{
+	&#34;username&#34;: &#34;aaa&#34;,
+	&#34;password&#34;:&#34;qqqqq@11111&#34;,
+	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
+	&#34;roles&#34;: [&#34;admin&#34;, &#34;test&#34;]
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" e9d5d4b7-25af-4782-ab0d-5ee81aa24af3\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"aaa\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"admin\", \"test\"]\n}");
+                            document.getElementById('request-body-4-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-4-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
+                            document.getElementById('response-body-4-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+        <div id="5top"  role="tabpanel" class="tab-pane col-md-10">
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  66be315d-1932-4dc5-a84d-407e2dc8bdd1</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-5-0" class="prettyprint">{
+	&#34;username&#34;: &#34;bbb&#34;,
+	&#34;password&#34;:&#34;qqqqq@11111&#34;,
+	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
+	&#34;roles&#34;: [&#34;test&#34;]
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" 66be315d-1932-4dc5-a84d-407e2dc8bdd1\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"bbb\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"test\"]\n}");
+                            document.getElementById('request-body-5-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-5-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4425203&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;bbb&#34;,&#34;Password&#34;:&#34;qqqqq@11111&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4425203+08:00\",\"DeletedAt\":null,\"Username\":\"bbb\",\"Password\":\"qqqqq@11111\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
+                            document.getElementById('response-body-5-0').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+                
+                <p> <H4> Request Headers </H4> </p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Authorization</td>
+                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td>  application/json</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Postman-Token</td>
+                        <td>  2a202ac9-cbe7-4e6e-9635-7513bf907b54</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                
+                
+                <p> <H4> Request Body </H4> </p>
+                <pre id="request-body-5-1" class="prettyprint">{
+	&#34;username&#34;: &#34;aaa&#34;,
+	&#34;password&#34;:&#34;qqqqq@11111&#34;,
+	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
+	&#34;roles&#34;: [&#34;test&#34;]
+}</pre>
+                <script>
+                     
+                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" 2a202ac9-cbe7-4e6e-9635-7513bf907b54\r"};
+
+                    if (requestHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\n\t\"username\": \"aaa\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"test\"]\n}");
+                            document.getElementById('request-body-5-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <p><h4> Response Code</h4></p>
+                <pre class="prettyprint lang-json">200</pre>
+                
+                <p><h4> Response Headers</h4></p>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    
+                    <tr>
+                        <td>Content-Type</td>
+                        <td> application/json; charset=UTF-8</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Vary</td>
+                        <td> Origin</td>
+                    </tr>
+                    
+                </table>
+                
+                
+                <p> <H4> Response Body </H4> </p>
+                <pre class="prettyprint" id="response-body-5-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0740037&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;qqqqq@11111&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0760094&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
+                <script>
+                     
+                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
+
+                    if (responseHeader["Content-Type"].includes("application/json")){
+                        try {
+                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0740037+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"qqqqq@11111\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0760094+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
+                            document.getElementById('response-body-5-1').innerHTML = syntaxHighlight(jsonStr);
+                        } catch (e) {
+                             
+                        }
+                    }
+                </script>
+                
+                <hr>
+            
+        </div>
+        
+    </div>
+</div>
+</div>
+<hr>
+</body>
+</html>
