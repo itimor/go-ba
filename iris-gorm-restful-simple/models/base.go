@@ -20,6 +20,7 @@ func CreateSystemData(env string) {
 		aul := new(UserJson)
 		aul.Username = config.Conf.Get(env + ".user").(string)
 		aul.Password = config.Conf.Get(env + ".pass").(string)
-		CreateSystemAdmin(aul, []string{rolename})
+		aul.Roles = []string{rolename}
+		CreateSystemAdmin(aul)
 	}
 }

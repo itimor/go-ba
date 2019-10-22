@@ -28,8 +28,8 @@ func GetRoleById(id uint) (role *Role, err error) {
 	role = new(Role)
 	role.ID = id
 
-	if err = database.DB.Preload("Perms").First(role).Error; err != nil {
-		golog.Error("GetRoleByIdErr:%s", err)
+	if err = database.DB.First(role).Error; err != nil {
+		golog.Error("GetRoleByIdErr ", err)
 	}
 
 	return
@@ -44,8 +44,8 @@ func GetRoleByName(name string) (role *Role, err error) {
 	role = new(Role)
 	role.Name = name
 
-	if err = database.DB.Preload("Perms").First(role).Error; err != nil {
-		golog.Error("GetRoleByNameErr:%s", err)
+	if err = database.DB.First(&role).Error; err != nil {
+		golog.Error("GetRoleByNameErr ", err)
 	}
 
 	return
@@ -60,7 +60,7 @@ func DeleteRoleById(id uint) {
 	u.ID = id
 
 	if err := database.DB.Delete(u).Error; err != nil {
-		golog.Error("DeleteRoleErr:%s", err)
+		golog.Error("DeleteRoleErr ", err)
 	}
 }
 
@@ -74,8 +74,8 @@ func DeleteRoleById(id uint) {
  */
 func GetAllRoles(name, orderBy string, offset, limit int) (roles []*Role, err error) {
 
-	if err = database.GetAll(name, orderBy, offset, limit).Preload("Perms").Find(&roles).Error; err != nil {
-		golog.Error("GetAllRoleErr:%s", err)
+	if err = database.GetAll(name, orderBy, offset, limit).Find(&roles).Error; err != nil {
+		golog.Error("GetAllRoleErr ", err)
 	}
 	return
 }
@@ -95,14 +95,14 @@ func CreateRole(aul *RoleJson) (role *Role, err error) {
 	role.Desc = aul.Desc
 
 	if err = database.DB.Create(role).Error; err != nil {
-		golog.Error("CreateRoleErr:%s", err)
+		golog.Error("CreateRoleErr ", err)
 	}
 
 	// perms := []Permission{}
 	// database.DB.Where("id in (?)", permIds).Find(&perms)
 	// golog.Error(perms)
 	// if err := database.DB.Model(&role).Association("Perms").Append(perms).Error; err != nil {
-	// 	golog.Error("AppendPermsErr:%s", err)
+	// 	golog.Error("AppendPermsErr ", err)
 	// }
 
 	return
@@ -120,13 +120,13 @@ func UpdateRole(rj *RoleJson, id uint) (role *Role, err error) {
 	role.ID = id
 
 	if err = database.DB.Model(&role).Updates(rj).Error; err != nil {
-		golog.Error("UpdatRoleErr:%s", err)
+		golog.Error("UpdatRoleErr ", err)
 	}
 
 	// perms := []Permission{}
 	// database.DB.Where("id in (?)", permIds).Find(&perms)
 	// if err := database.DB.Model(&role).Association("Perms").Replace(perms).Error; err != nil {
-	// 	golog.Error("AppendPermsErr:%s", err)
+	// 	golog.Error("AppendPermsErr ", err)
 	// }
 
 	return
@@ -145,10 +145,10 @@ func CreateSystemAdminRole(rolename string) (role *Role, err error) {
 	role, err = GetRoleByName(aul.Name)
 
 	if role.ID == 0 {
-		golog.Error("创建角色")
+		golog.Info("创建角色")
 		return CreateRole(aul)
 	} else {
-		golog.Error("角色已存在")
+		golog.Warn("角色已存在")
 		return
 	}
 }

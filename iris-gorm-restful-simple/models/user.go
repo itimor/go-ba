@@ -36,8 +36,8 @@ func GetUserById(id uint) (user *User, err error) {
 	user = new(User)
 	user.ID = id
 
-	if err = database.DB.Preload("Role").First(user).Error; err != nil {
-		golog.Error("GetUserByIdErr:%s", err)
+	if err = database.DB.First(user).Error; err != nil {
+		golog.Error("GetUserByIdErr ", err)
 	}
 
 	return
@@ -51,8 +51,8 @@ func GetUserById(id uint) (user *User, err error) {
 func GetUserByUserName(username string) (user *User, err error) {
 	user = new(User)
 	user.Username = username
-	if err := database.DB.Preload("Role").First(user).Error; err != nil {
-		golog.Error("GetUserByUserNameErr:%s", err)
+	if err := database.DB.First(user).Error; err != nil {
+		golog.Error("GetUserByUserNameErr ", err)
 	}
 
 	return
@@ -67,7 +67,7 @@ func DeleteUserById(id uint) {
 	u.ID = id
 
 	if err := database.DB.Delete(u).Error; err != nil {
-		golog.Error("DeleteUserByIdErr:%s", err)
+		golog.Error("DeleteUserByIdErr ", err)
 	}
 }
 
@@ -76,7 +76,7 @@ func DeleteUserById(id uint) {
  * @method CreateUser
  * @param  {[type]} kw string [description]
  */
-func CreateUser(aul *UserJson, roleNames []string) (user *User, err error) {
+func CreateUser(aul *UserJson) (user *User, err error) {
 	salt, _ := bcrypt.Salt(10)
 	hash, _ := bcrypt.Hash(aul.Password, salt)
 
@@ -86,14 +86,13 @@ func CreateUser(aul *UserJson, roleNames []string) (user *User, err error) {
 	user.Avatar = aul.Avatar
 
 	if err := database.DB.Create(user).Error; err != nil {
-		golog.Error("CreateUserErr:%s", err)
+		golog.Error("CreateUserErr ", err)
 	}
 
 	roles := []Role{}
-	database.DB.Where("name in (?)", roleNames).Find(&roles)
-	golog.Info(roles)
+	database.DB.Where("name in (?)", aul.Roles).Find(&roles)
 	if err := database.DB.Model(&user).Association("Roles").Append(roles).Error; err != nil {
-		golog.Error("AppendRolesErr:%s", err)
+		golog.Error("AppendRolesErr ", err)
 	}
 
 	return
@@ -105,20 +104,20 @@ func CreateUser(aul *UserJson, roleNames []string) (user *User, err error) {
  * @param  {[type]} kw string [description]
  * @param  {[type]} id int    [description]
  */
-func UpdateUser(uj *UserJson, id uint, roleNames []string) (user *User, err error) {
+func UpdateUser(uj *UserJson, id uint) (user *User, err error) {
 	user, _ = GetUserById(id)
 	user.Username = uj.Username
 	user.Avatar = uj.Avatar
 
 	if err = database.DB.Model(user).Updates(uj).Error; err != nil {
-		golog.Error("UpdateUserErr:%s", err)
+		golog.Error("UpdateUserErr ", err)
 	}
 
 	roles := []Role{}
-	database.DB.Where("name in (?)", roleNames).Find(&roles)
+	database.DB.Where("name in (?)", uj.Roles).Find(&roles)
 	golog.Info(roles)
 	if err := database.DB.Model(&user).Association("Roles").Append(roles).Error; err != nil {
-		golog.Error("AppendRolesErr:%s", err)
+		golog.Error("AppendRolesErr ", err)
 	}
 
 	return
@@ -140,7 +139,7 @@ func UpdateUserPassword(password string, id uint) (user *User, err error) {
 
 	err = database.DB.Model(user).Updates(user).Error
 	if err != nil {
-		golog.Error("UpdateUserPasswordErr:%s", err)
+		golog.Error("UpdateUserPasswordErr ", err)
 	}
 	return
 }
@@ -156,7 +155,7 @@ func UpdateUserPassword(password string, id uint) (user *User, err error) {
  */
 func GetAllUsers(name, orderBy string, offset, limit int) (users []*User) {
 	if err := database.GetAll(name, orderBy, offset, limit).Preload("Role").Find(&users).Error; err != nil {
-		golog.Error("GetAllUserErr:%s", err)
+		golog.Error("GetAllUserErr ", err)
 	}
 	return
 }
@@ -169,7 +168,7 @@ func GetAllUsers(name, orderBy string, offset, limit int) (users []*User) {
 func UserAdminCheckLogin(username string) User {
 	u := User{}
 	if err := database.DB.Where("username = ?", username).First(&u).Error; err != nil {
-		golog.Error("UserAdminCheckLoginErr:%s", err)
+		golog.Error("UserAdminCheckLoginErr ", err)
 	}
 	return u
 }
@@ -234,14 +233,14 @@ func UserAdminLogout(userId uint) bool {
 *@param role_id uint
 *@return   *models.AdminUserTranform api格式化后的数据格式
  */
-func CreateSystemAdmin(aul *UserJson, roleNames []string) (user *User, err error) {
+func CreateSystemAdmin(aul *UserJson) (user *User, err error) {
 	user, err = GetUserByUserName(aul.Username)
 
 	if user.ID == 0 {
 		golog.Info("创建账号")
-		return CreateUser(aul, roleNames)
+		return CreateUser(aul)
 	} else {
-		golog.Error("账号已存在")
+		golog.Warn("账号已存在")
 		return
 	}
 }

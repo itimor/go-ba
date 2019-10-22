@@ -53,9 +53,11 @@ func newApp() *iris.Application {
 	})
 
 	// migrate db
+	golog.Info("初始化数据库")
 	database.DB.AutoMigrate(
 		&models.User{},
 		&models.Role{},
+		&models.OauthToken{},
 	)
 
 	iris.RegisterOnInterrupt(func() {
