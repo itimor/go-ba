@@ -14,6 +14,6 @@ func Register(api *iris.Application) {
 		_, _ = ctx.JSON(controllers.ApiResource(false, nil, "404 Not Found"))
 	})
 	api.OnErrorCode(iris.StatusInternalServerError, func(ctx iris.Context) {
-		_, _ = ctx.WriteString("Oups something went wrong, try again")
+		_, _ = ctx.WriteString("Oh my god, something went wrong, please check code or try again")
 	})
 }

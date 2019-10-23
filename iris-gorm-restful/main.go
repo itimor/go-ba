@@ -9,7 +9,6 @@ import (
 	"flag"
 	"os"
 
-	"github.com/betacraft/yaag/yaag"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
@@ -19,7 +18,6 @@ import (
 func main() {
 	flag.Parse()
 	app := newApp()
-
 	err := app.Run(iris.Addr(":8000"), iris.WithoutServerError(iris.ErrServerClosed))
 	if err != nil {
 		panic(err)
@@ -51,7 +49,7 @@ func newApp() *iris.Application {
 	// 	ctx.JSON(controllers.ApiResource(false, nil, "404 Not Found"))
 	// })
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx iris.Context) {
-		ctx.WriteString("Oups something went wrong, try again")
+		ctx.WriteString("Oh my god, something went wrong, please check code or try again")
 
 	})
 
@@ -69,20 +67,6 @@ func newApp() *iris.Application {
 
 	// 加载路由
 	routes.Register(app)
-
-	//api 文档配置
-	appName := config.Conf.Get("server.name").(string)
-	appDoc := config.Conf.Get("server.apidoc").(string)
-	appURL := config.Conf.Get("server.apiurl").(string)
-	yaag.Init(&yaag.Config{ // <- IMPORTANT, init the middleware.
-		On:       true,
-		DocTitle: appName,
-		DocPath:  appDoc + "/index.html", //设置绝对路径
-		BaseUrls: map[string]string{
-			"Production": appURL,
-			"Staging":    "",
-		},
-	})
 
 	//初始化系统 账号 权限 角色
 	models.CreateSystemData(env)

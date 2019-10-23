@@ -1,1379 +1,669 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title> API Documentation </title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>   
-    
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <style type="text/css">
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        .hidden {
-            display:none;
-        }
-        pre {
-            outline: 1px solid #ccc;
-            padding: 5px; margin: 5px;
-        }
-
-        .string { color: green; }
-        .number { color: darkorange; }
-        .boolean { color: blue; }
-        .null { color: magenta; }
-        .key { color: red; }
-
-    </style>
-    <style type="text/css">
-        pre.prettyprint {
-            border: 1px solid #ccc;
-            margin-bottom: 0;
-            padding: 9.5px;
-        }
-    </style>
-    <script>
-         
-        function syntaxHighlight(json) {
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                var cls = 'number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'key';
-                    } else {
-                        cls = 'string';
-                    }
-                } else if (/true|false/.test(match)) {
-                    cls = 'boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'null';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
-        }
-
-        function spaceJson(json){
-            var validJson = JSON.parse(json);
-            return JSON.stringify(validJson, undefined, 4);
-        }
-    </script>
-
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Loading...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link href="vendor/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="vendor/prettify.css" rel="stylesheet" media="screen">
+  <link href="css/style.css" rel="stylesheet" media="screen, print">
+  <link href="img/favicon.ico" rel="icon" type="image/x-icon">
+  <script src="vendor/polyfill.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
-        
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">gogobar</a>
-            <p class="navbar-text">Developed by Gophers at <a href="http://betacraft.co">Betacraft</a></p>
-        </div>
-            
-        
-    </div>
-    
+
+<script id="template-sidenav" type="text/x-handlebars-template">
+<nav id="scrollingNav">
+  <div class="sidenav-search">
+    <input class="form-control search" type="text" placeholder="{{__ "Filter..."}}">
+    <span class="search-reset">x</span>
+  </div>
+  <ul class="sidenav nav nav-list list">
+  {{#each nav}}
+    {{#if title}}
+      {{#if isHeader}}
+        {{#if isFixed}}
+          <li class="nav-fixed nav-header navbar-btn nav-list-item" data-group="{{group}}"><a href="#api-{{group}}">{{underscoreToSpace title}}</a></li>
+        {{else}}
+          <li class="nav-header nav-list-item" data-group="{{group}}"><a href="#api-{{group}}">{{underscoreToSpace title}}</a></li>
+        {{/if}}
+      {{else}}
+        <li class="{{#if hidden}}hide {{/if}}" data-group="{{group}}" data-name="{{name}}" data-version="{{version}}">
+          <a href="#api-{{group}}-{{name}}" class="nav-list-item">{{title}}</a>
+        </li>
+      {{/if}}
+    {{/if}}
+  {{/each}}
+  </ul>
 </nav>
-<div class="container-fluid" style="margin-top: 70px;margin-bottom: 20px;">
-    <div class="container-fluid">
-    <div class="col-md-4">
-        <div class="panel panel-default">
-              <div class="panel-heading">Base Urls</div>
-              <div class="panel-body">
-                
-                    <p>Production : <strong>http://localhost:8000</strong></p>
-                
-                    <p>Staging : <strong></strong></p>
-                
+</script>
+
+<script id="template-project" type="text/x-handlebars-template">
+  <div class="pull-left">
+    <h1>{{name}}</h1>
+    {{#if description}}<h2>{{{nl2br description}}}</h2>{{/if}}
+  </div>
+  {{#if template.withCompare}}
+  <div class="pull-right">
+    <div class="btn-group">
+      <button id="version" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown">
+        <strong>{{version}}</strong>&nbsp;<span class="caret"></span>
+      </button>
+      <ul id="versions" class="dropdown-menu open-left">
+        <li><a id="compareAllWithPredecessor" href="#">{{__ "Compare all with predecessor"}}</a></li>
+        <li class="divider"></li>
+        <li class="disabled"><a href="#">{{__ "show up to version:"}}</a></li>
+      {{#each versions}}
+        <li class="version"><a href="#">{{this}}</a></li>
+      {{/each}}
+      </ul>
+    </div>
+  </div>
+  {{/if}}
+  <div class="clearfix"></div>
+</script>
+
+<script id="template-header" type="text/x-handlebars-template">
+  {{#if content}}
+    <div id="api-_">{{{content}}}</div>
+  {{/if}}
+</script>
+
+<script id="template-footer" type="text/x-handlebars-template">
+  {{#if content}}
+    <div id="api-_footer">{{{content}}}</div>
+  {{/if}}
+</script>
+
+<script id="template-generator" type="text/x-handlebars-template">
+  {{#if template.withGenerator}}
+    {{#if generator}}
+      <div class="content">
+        {{__ "Generated with"}} <a href="{{{generator.url}}}">{{{generator.name}}}</a> {{{generator.version}}} - {{{generator.time}}}
+      </div>
+    {{/if}}
+  {{/if}}
+</script>
+
+<script id="template-sections" type="text/x-handlebars-template">
+  <section id="api-{{group}}">
+    <h1>{{underscoreToSpace title}}</h1>
+    {{#if description}}
+      <p>{{{nl2br description}}}</p>
+    {{/if}}
+    {{#each articles}}
+      <div id="api-{{group}}-{{name}}">
+        {{{article}}}
+      </div>
+    {{/each}}
+  </section>
+</script>
+
+<script id="template-article" type="text/x-handlebars-template">
+  <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
+    <div class="pull-left">
+      <h1>{{article.groupTitle}}{{#if article.title}} - {{article.title}}{{/if}}</h1>
+    </div>
+    {{#if template.withCompare}}
+    <div class="pull-right">
+      <div class="btn-group">
+        <button class="version btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <strong>{{article.version}}</strong>&nbsp;<span class="caret"></span>
+        </button>
+        <ul class="versions dropdown-menu open-left">
+          <li class="disabled"><a href="#">{{__ "compare changes to:"}}</a></li>
+        {{#each versions}}
+          <li class="version"><a href="#">{{this}}</a></li>
+        {{/each}}
+        </ul>
+      </div>
+    </div>
+    {{/if}}
+    <div class="clearfix"></div>
+
+    {{#if article.deprecated}}
+      <p class="deprecated"><span>{{__ "DEPRECATED"}}</span>
+        {{{markdown article.deprecated.content}}}
+      </p>
+    {{/if}}
+
+    {{#if article.description}}
+      <p>{{{nl2br article.description}}}</p>
+    {{/if}}
+    <span class="type type__{{toLowerCase article.type}}">{{toLowerCase article.type}}</span>
+    <pre class="prettyprint language-html" data-type="{{toLowerCase article.type}}"><code>{{article.url}}</code></pre>
+
+    {{#if article.permission}}
+      <p>
+        {{__ "Permission:"}}
+        {{#each article.permission}}
+          {{name}}
+          {{#if title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{/if}}
+        {{/each}}
+      </p>
+    {{/if}}
+
+    {{#if_gt article.examples.length compare=0}}
+      <ul class="nav nav-tabs nav-tabs-examples">
+        {{#each article.examples}}
+          <li{{#if_eq @index compare=0}} class="active"{{/if_eq}}>
+            <a href="#examples-{{../id}}-{{@index}}">{{title}}</a>
+          </li>
+        {{/each}}
+      </ul>
+
+      <div class="tab-content">
+      {{#each article.examples}}
+        <div class="tab-pane{{#if_eq @index compare=0}} active{{/if_eq}}" id="examples-{{../id}}-{{@index}}">
+          <pre class="prettyprint language-{{type}}" data-type="{{type}}"><code>{{content}}</code></pre>
+        </div>
+      {{/each}}
+      </div>
+    {{/if_gt}}
+
+    {{subTemplate "article-param-block" params=article.header _hasType=_hasTypeInHeaderFields section="header"}}
+    {{subTemplate "article-param-block" params=article.parameter _hasType=_hasTypeInParameterFields section="parameter"}}
+    {{subTemplate "article-param-block" params=article.success _hasType=_hasTypeInSuccessFields section="success"}}
+    {{subTemplate "article-param-block" params=article.error _col1="Name" _hasType=_hasTypeInErrorFields section="error"}}
+
+    {{subTemplate "article-sample-request" article=article id=id}}
+  </article>
+</script>
+
+<script id="template-article-param-block" type="text/x-handlebars-template">
+  {{#if params}}
+    {{#each params.fields}}
+      <h2>{{__ @key}}</h2>
+      <table>
+        <thead>
+          <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th style="width: {{#if ../_hasType}}60%{{else}}70%{{/if}}">{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each this}}
+          <tr>
+            <td class="code">{{{splitFill field "." "&nbsp;&nbsp;"}}}{{#if optional}} <span class="label label-optional">{{__ "optional"}}</span>{{/if}}</td>
+            {{#if ../../_hasType}}
+              <td>
+                {{{type}}}
+              </td>
+            {{/if}}
+            <td>
+            {{{nl2br description}}}
+            {{#if defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{defaultValue}}}</code></p>{{/if}}
+            {{#if size}}<p class="type-size">{{__ "Size range:"}} <code>{{{size}}}</code></p>{{/if}}
+            {{#if allowedValues}}<p class="type-size">{{__ "Allowed values:"}}
+              {{#each allowedValues}}
+                <code>{{{this}}}</code>{{#unless @last}}, {{/unless}}
+              {{/each}}
+              </p>
+            {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+    {{/each}}
+    {{#if_gt params.examples.length compare=0}}
+      <ul class="nav nav-tabs nav-tabs-examples">
+      {{#each params.examples}}
+        <li{{#if_eq @index compare=0}} class="active"{{/if_eq}}>
+          <a href="#{{../section}}-examples-{{../id}}-{{@index}}">{{title}}</a>
+        </li>
+      {{/each}}
+      </ul>
+
+      <div class="tab-content">
+      {{#each params.examples}}
+        <div class="tab-pane{{#if_eq @index compare=0}} active{{/if_eq}}" id="{{../section}}-examples-{{../id}}-{{@index}}">
+        <pre class="prettyprint language-{{type}}" data-type="{{type}}"><code>{{reformat content type}}</code></pre>
+        </div>
+      {{/each}}
+      </div>
+    {{/if_gt}}
+  {{/if}}
+</script>
+
+<script id="template-article-sample-request" type="text/x-handlebars-template">
+    {{#if article.sampleRequest}}
+      <h2>{{__ "Send a Sample Request"}}</h2>
+      <form class="form-horizontal">
+        <fieldset>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="{{../id}}-sample-request-url"></label>
+              <div class="input-group">
+                <input id="{{../id}}-sample-request-url" type="text" class="form-control sample-request-url" value="{{article.sampleRequest.0.url}}" />
+                <span class="input-group-addon">{{__ "url"}}</span>
               </div>
-            </div>    
-        <ul class="nav nav-pills nav-stacked" role="tablist">
-            
-                <li role="presentation"><a href="#0top" role="tab" data-toggle="tab">POST : /v1/api/login</a></li>
-            
-                <li role="presentation"><a href="#1top" role="tab" data-toggle="tab">POST : /v1/api/roles</a></li>
-            
-                <li role="presentation"><a href="#2top" role="tab" data-toggle="tab">GET : /v1/api/users</a></li>
-            
-                <li role="presentation"><a href="#3top" role="tab" data-toggle="tab">GET : /v1/api/users/1</a></li>
-            
-                <li role="presentation"><a href="#4top" role="tab" data-toggle="tab">POST : /v1/api/users</a></li>
-            
-                <li role="presentation"><a href="#5top" role="tab" data-toggle="tab">PUT : /v1/api/users/2</a></li>
-            
-                <li role="presentation"><a href="#6top" role="tab" data-toggle="tab">PATCH : /v1/api/users/changePasswd/2</a></li>
-            
-        <ul>
+            </div>
+
+      {{#if article.header}}
+        {{#if article.header.fields}}
+          <h3>{{__ "Headers"}}</h3>
+          {{#each article.header.fields}}
+            <h4><input type="radio" data-sample-request-header-group-id="sample-request-header-{{@index}}" name="{{../id}}-sample-request-header" value="{{@index}}" class="sample-request-header sample-request-switch" {{#if_eq @index compare=0}} checked{{/if_eq}} />{{@key}}</h4>
+            <div class="{{../id}}-sample-request-header-fields{{#if_gt @index compare=0}} hide{{/if_gt}}">
+              {{#each this}}
+              <div class="form-group">
+                <label class="col-md-3 control-label" for="sample-request-header-field-{{field}}">{{field}}</label>
+                <div class="input-group">
+                  <input type="text" placeholder="{{field}}" id="sample-request-header-field-{{field}}" class="form-control sample-request-header" data-sample-request-header-name="{{field}}" data-sample-request-header-group="sample-request-header-{{@../index}}">
+                  <span class="input-group-addon">{{{type}}}</span>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        {{/if}}
+      {{/if}}
+
+      {{#if article.parameter}}
+        {{#if article.parameter.fields}}
+          <h3>{{__ "Parameters"}}</h3>
+          {{#each article.parameter.fields}}
+            <h4><input type="radio" data-sample-request-param-group-id="sample-request-param-{{@index}}"  name="{{../id}}-sample-request-param" value="{{@index}}" class="sample-request-param sample-request-switch" {{#if_eq @index compare=0}} checked{{/if_eq}} />{{@key}}</h4>
+            <div class="form-group {{../id}}-sample-request-param-fields{{#if_gt @index compare=0}} hide{{/if_gt}}">
+              {{#each this}}
+                <label class="col-md-3 control-label" for="sample-request-param-field-{{field}}">{{field}}</label>
+                <div class="input-group">
+                  <input id="sample-request-param-field-{{field}}" type="text" placeholder="{{field}}" class="form-control sample-request-param" data-sample-request-param-name="{{field}}" data-sample-request-param-group="sample-request-param-{{@../index}}" {{#if optional}}data-sample-request-param-optional="true"{{/if}}>
+                  <div class="input-group-addon">{{{type}}}</div>
+                </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        {{/if}}
+      {{/if}}
+
+          <div class="form-group">
+            <div class="controls pull-right">
+              <button class="btn btn-primary sample-request-send" data-sample-request-type="{{article.type}}">{{__ "Send"}}</button>
+            </div>
+          </div>
+          <div class="form-group sample-request-response" style="display: none;">
+            <h3>
+              {{__ "Response"}}
+              <button class="btn btn-default btn-xs pull-right sample-request-clear">X</button>
+            </h3>
+            <pre class="prettyprint language-json" data-type="json"><code class="sample-request-response-json"></code></pre>
+          </div>
+        </fieldset>
+      </form>
+    {{/if}}
+</script>
+
+<script id="template-compare-article" type="text/x-handlebars-template">
+  <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}" data-compare-version="{{compare.version}}">
+    <div class="pull-left">
+      <h1>{{underscoreToSpace article.group}} - {{{showDiff article.title compare.title}}}</h1>
     </div>
-    <div class="col-md-8 tab-content">
-        
-        <div id="0top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  0dd3378a-6a67-4f31-bd95-882ce397de29</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-0-0" class="prettyprint">{
-	&#34;username&#34;: &#34;admin&#34;,
-	&#34;password&#34;:&#34;qwert@12345&#34;
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 0dd3378a-6a67-4f31-bd95-882ce397de29\r"};
 
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
-                            document.getElementById('request-body-0-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-0-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzYyODEsImlhdCI6MTU3MTczMjY4MX0.xd04Hdo89gGDEyAT183dYPSy_0nhCW4lZAPoDGGrSeI&#34;}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzYyODEsImlhdCI6MTU3MTczMjY4MX0.xd04Hdo89gGDEyAT183dYPSy_0nhCW4lZAPoDGGrSeI\"}}");
-                            document.getElementById('response-body-0-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  4aaecf80-b2de-4004-9096-d33e62753a92</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-0-1" class="prettyprint">{
-	&#34;username&#34;: &#34;admin&#34;,
-	&#34;password&#34;:&#34;qwert@12345&#34;
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 4aaecf80-b2de-4004-9096-d33e62753a92\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
-                            document.getElementById('request-body-0-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-0-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MjUsImlhdCI6MTU3MTczMjgyNX0.vspeRNrqnd5pGk4wxHznkziH_QcREVKr6I9pvkIhA34&#34;}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MjUsImlhdCI6MTU3MTczMjgyNX0.vspeRNrqnd5pGk4wxHznkziH_QcREVKr6I9pvkIhA34\"}}");
-                            document.getElementById('response-body-0-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  61dca99a-4f36-441f-969f-a159c7bd9e01</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-0-2" class="prettyprint">{
-	&#34;username&#34;: &#34;admin&#34;,
-	&#34;password&#34;:&#34;qwert@12345&#34;
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 61dca99a-4f36-441f-969f-a159c7bd9e01\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"admin\",\n\t\"password\":\"qwert@12345\"\n}");
-                            document.getElementById('request-body-0-2').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-0-2">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU&#34;}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\"}}");
-                            document.getElementById('response-body-0-2').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  938d1012-60d7-bde6-dc1d-2547931a17d2</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Mode</td>
-                        <td>  cors</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Site</td>
-                        <td>  cross-site</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-0-3" class="prettyprint">	   {
-	       &#34;username&#34;: &#34;admin&#34;,
-	       &#34;password&#34;: &#34;qwert@12345&#34;
-	   }</pre>
-                <script>
-                     
-                    var requestHeader ={"Content-Type":" application/json\r","Postman-Token":" 938d1012-60d7-bde6-dc1d-2547931a17d2\r","Sec-Fetch-Mode":" cors\r","Sec-Fetch-Site":" cross-site\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("\t   {\r\n\t       \"username\": \"admin\",\r\n\t       \"password\": \"qwert@12345\"\r\n\t   }");
-                            document.getElementById('request-body-0-3').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Allow-Credentials</td>
-                        <td> true</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Allow-Origin</td>
-                        <td> chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Expose-Headers</td>
-                        <td> Accept, Content-Type, Content-Length, Accept-Encoding, X-Csrf-Token, Authorization</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-0-3">{&#34;status&#34;:true,&#34;msg&#34;:&#34;登陆成功&#34;,&#34;data&#34;:{&#34;access_token&#34;:&#34;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3NTMzOTEsImlhdCI6MTU3MTc0OTc5MX0.5G_okPOqZIqSElPYpfKORksz-3JzmvfNRa3h2rjpdQA&#34;}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Access-Control-Allow-Credentials":"true","Access-Control-Allow-Origin":"chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop","Access-Control-Expose-Headers":"Accept, Content-Type, Content-Length, Accept-Encoding, X-Csrf-Token, Authorization","Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"登陆成功\",\"data\":{\"access_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3NTMzOTEsImlhdCI6MTU3MTc0OTc5MX0.5G_okPOqZIqSElPYpfKORksz-3JzmvfNRa3h2rjpdQA\"}}");
-                            document.getElementById('response-body-0-3').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="1top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  c1276580-b671-421d-9b10-0581aae4771e</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-1-0" class="prettyprint">{
-	&#34;name&#34;: &#34;test&#34;,
-	&#34;desc&#34;: &#34;测试&#34;
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" c1276580-b671-421d-9b10-0581aae4771e\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"name\": \"test\",\n\t\"desc\": \"测试\"\n}");
-                            document.getElementById('request-body-1-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-1-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}}");
-                            document.getElementById('response-body-1-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="2top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  682074a6-4147-45e8-8132-92dbd8782c1b</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-2-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:null,&#34;IsActive&#34;:true}]}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":null,\"IsActive\":true}]}");
-                            document.getElementById('response-body-2-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  69fe3ae2-d66e-421d-8291-d9c7238d614b</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-2-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}]}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}]}");
-                            document.getElementById('response-body-2-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  fe631c83-0426-453c-bc77-a1faa03e31c8</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-2-2">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true},{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}]}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true},{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}]}");
-                            document.getElementById('response-body-2-2').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3NTMzOTEsImlhdCI6MTU3MTc0OTc5MX0.5G_okPOqZIqSElPYpfKORksz-3JzmvfNRa3h2rjpdQA</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  f3288037-e7cf-16e6-c461-49ec789b837a</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Mode</td>
-                        <td>  cors</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Site</td>
-                        <td>  cross-site</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-2-3">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0740037&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;qqqqq@11111&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0760094&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true},{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0760094&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}]}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0740037+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"qqqqq@11111\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0760094+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true},{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0760094+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}]}");
-                            document.getElementById('response-body-2-3').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="3top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  cf98c27d-204f-4711-a80c-0dd78d51da2a</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-3-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:null,&#34;IsActive&#34;:true}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":null,\"IsActive\":true}}");
-                            document.getElementById('response-body-3-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  9296f4ac-85fa-4208-9645-42621f26408e</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-3-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.2017635&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;admin&#34;,&#34;Password&#34;:&#34;$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;}],&#34;IsActive&#34;:true}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.2017635+08:00\",\"DeletedAt\":null,\"Username\":\"admin\",\"Password\":\"$2a$10$vCs4/Hp.LVEO8AK9nmkgI.K1vv/Dt.QwxIJkOIUFugJw6InFM.rrq\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"}],\"IsActive\":true}}");
-                            document.getElementById('response-body-3-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="4top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  e9d5d4b7-25af-4782-ab0d-5ee81aa24af3</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-4-0" class="prettyprint">{
-	&#34;username&#34;: &#34;aaa&#34;,
-	&#34;password&#34;:&#34;qqqqq@11111&#34;,
-	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
-	&#34;roles&#34;: [&#34;admin&#34;, &#34;test&#34;]
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" e9d5d4b7-25af-4782-ab0d-5ee81aa24af3\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"aaa\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"admin\", \"test\"]\n}");
-                            document.getElementById('request-body-4-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-4-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"$2a$10$UGpY/1pgNtLotzdpP.X.Y.JoxrJmVqcAVM0dZWyzk28Rtbvu3mSMW\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
-                            document.getElementById('response-body-4-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="5top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  66be315d-1932-4dc5-a84d-407e2dc8bdd1</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-5-0" class="prettyprint">{
-	&#34;username&#34;: &#34;bbb&#34;,
-	&#34;password&#34;:&#34;qqqqq@11111&#34;,
-	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
-	&#34;roles&#34;: [&#34;test&#34;]
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" 66be315d-1932-4dc5-a84d-407e2dc8bdd1\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"bbb\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"test\"]\n}");
-                            document.getElementById('request-body-5-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-5-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4425203&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;bbb&#34;,&#34;Password&#34;:&#34;qqqqq@11111&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:1,&#34;CreatedAt&#34;:&#34;2019-10-22T15:05:17.0841304&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;admin&#34;,&#34;DisplayName&#34;:&#34;超级管理员&#34;,&#34;Desc&#34;:&#34;超级管理员&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;},{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:21:38.4435209&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4425203+08:00\",\"DeletedAt\":null,\"Username\":\"bbb\",\"Password\":\"qqqqq@11111\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":1,\"CreatedAt\":\"2019-10-22T15:05:17.0841304+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"admin\",\"DisplayName\":\"超级管理员\",\"Desc\":\"超级管理员\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"},{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:21:38.4435209+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
-                            document.getElementById('response-body-5-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  2a202ac9-cbe7-4e6e-9635-7513bf907b54</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-5-1" class="prettyprint">{
-	&#34;username&#34;: &#34;aaa&#34;,
-	&#34;password&#34;:&#34;qqqqq@11111&#34;,
-	&#34;avatar&#34;: &#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,
-	&#34;roles&#34;: [&#34;test&#34;]
-}</pre>
-                <script>
-                     
-                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3MzY0MzEsImlhdCI6MTU3MTczMjgzMX0.AiVuEn6W6gz2zF1q0OlF3kTJKiLdvFKNQlVb-LTSQHU\r","Content-Type":" application/json\r","Postman-Token":" 2a202ac9-cbe7-4e6e-9635-7513bf907b54\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\n\t\"username\": \"aaa\",\n\t\"password\":\"qqqqq@11111\",\n\t\"avatar\": \"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\n\t\"roles\": [\"test\"]\n}");
-                            document.getElementById('request-body-5-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-5-1">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T17:17:23.1801391&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0740037&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;aaa&#34;,&#34;Password&#34;:&#34;qqqqq@11111&#34;,&#34;Avatar&#34;:&#34;https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg&#34;,&#34;Roles&#34;:[{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;2019-10-22T16:54:51.9188444&#43;08:00&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T17:23:16.0760094&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Name&#34;:&#34;test&#34;,&#34;DisplayName&#34;:&#34;&#34;,&#34;Desc&#34;:&#34;测试&#34;}],&#34;IsActive&#34;:true}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"2019-10-22T17:17:23.1801391+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0740037+08:00\",\"DeletedAt\":null,\"Username\":\"aaa\",\"Password\":\"qqqqq@11111\",\"Avatar\":\"https://apic.douyucdn.cn/upload/avanew/face/201709/04/01/95a344efd1141fd073397fa78cf952ae_big.jpg\",\"Roles\":[{\"ID\":2,\"CreatedAt\":\"2019-10-22T16:54:51.9188444+08:00\",\"UpdatedAt\":\"2019-10-22T17:23:16.0760094+08:00\",\"DeletedAt\":null,\"Name\":\"test\",\"DisplayName\":\"\",\"Desc\":\"测试\"}],\"IsActive\":true}}");
-                            document.getElementById('response-body-5-1').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
-        <div id="6top"  role="tabpanel" class="tab-pane col-md-10">
-            
-                
-                <p> <H4> Request Headers </H4> </p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Authorization</td>
-                        <td>  Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3NTMzOTEsImlhdCI6MTU3MTc0OTc5MX0.5G_okPOqZIqSElPYpfKORksz-3JzmvfNRa3h2rjpdQA</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td>  application/json</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Postman-Token</td>
-                        <td>  1ecc7978-4e8e-4aa1-84e9-bbaf04c17e14</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Mode</td>
-                        <td>  cors</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Sec-Fetch-Site</td>
-                        <td>  cross-site</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                
-                
-                <p> <H4> Request Body </H4> </p>
-                <pre id="request-body-6-0" class="prettyprint">	   {
-	       &#34;password&#34;: &#34;qwert@12345&#34;
-	   }</pre>
-                <script>
-                     
-                    var requestHeader ={"Authorization":" Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE3NTMzOTEsImlhdCI6MTU3MTc0OTc5MX0.5G_okPOqZIqSElPYpfKORksz-3JzmvfNRa3h2rjpdQA\r","Content-Type":" application/json\r","Postman-Token":" 1ecc7978-4e8e-4aa1-84e9-bbaf04c17e14\r","Sec-Fetch-Mode":" cors\r","Sec-Fetch-Site":" cross-site\r"};
-
-                    if (requestHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("\t   {\r\n\t       \"password\": \"qwert@12345\"\r\n\t   }");
-                            document.getElementById('request-body-6-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <p><h4> Response Code</h4></p>
-                <pre class="prettyprint lang-json">200</pre>
-                
-                <p><h4> Response Headers</h4></p>
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Allow-Credentials</td>
-                        <td> true</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Allow-Origin</td>
-                        <td> chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Access-Control-Expose-Headers</td>
-                        <td> Accept, Content-Type, Content-Length, Accept-Encoding, X-Csrf-Token, Authorization</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Content-Type</td>
-                        <td> application/json; charset=UTF-8</td>
-                    </tr>
-                    
-                    <tr>
-                        <td>Vary</td>
-                        <td> Origin</td>
-                    </tr>
-                    
-                </table>
-                
-                
-                <p> <H4> Response Body </H4> </p>
-                <pre class="prettyprint" id="response-body-6-0">{&#34;status&#34;:true,&#34;msg&#34;:&#34;操作成功&#34;,&#34;data&#34;:{&#34;ID&#34;:2,&#34;CreatedAt&#34;:&#34;0001-01-01T00:00:00Z&#34;,&#34;UpdatedAt&#34;:&#34;2019-10-22T21:21:15.0029072&#43;08:00&#34;,&#34;DeletedAt&#34;:null,&#34;Username&#34;:&#34;&#34;,&#34;Password&#34;:&#34;$2a$10$IpSfq9iMjsiN6rhyurqF2O/dsbM/u6mCHujVVm03VBBm0qFC5B9Wm&#34;,&#34;Avatar&#34;:&#34;&#34;,&#34;Roles&#34;:null,&#34;IsActive&#34;:false}}</pre>
-                <script>
-                     
-                    var responseHeader ={"Access-Control-Allow-Credentials":"true","Access-Control-Allow-Origin":"chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop","Access-Control-Expose-Headers":"Accept, Content-Type, Content-Length, Accept-Encoding, X-Csrf-Token, Authorization","Content-Type":"application/json; charset=UTF-8","Vary":"Origin"};
-
-                    if (responseHeader["Content-Type"].includes("application/json")){
-                        try {
-                            var jsonStr = spaceJson("{\"status\":true,\"msg\":\"操作成功\",\"data\":{\"ID\":2,\"CreatedAt\":\"0001-01-01T00:00:00Z\",\"UpdatedAt\":\"2019-10-22T21:21:15.0029072+08:00\",\"DeletedAt\":null,\"Username\":\"\",\"Password\":\"$2a$10$IpSfq9iMjsiN6rhyurqF2O/dsbM/u6mCHujVVm03VBBm0qFC5B9Wm\",\"Avatar\":\"\",\"Roles\":null,\"IsActive\":false}}");
-                            document.getElementById('response-body-6-0').innerHTML = syntaxHighlight(jsonStr);
-                        } catch (e) {
-                             
-                        }
-                    }
-                </script>
-                
-                <hr>
-            
-        </div>
-        
+    <div class="pull-right">
+      <div class="btn-group">
+        <button class="btn btn-success" disabled>
+          <strong>{{article.version}}</strong> {{__ "compared to"}}
+        </button>
+        <button class="version btn btn-danger dropdown-toggle" data-toggle="dropdown">
+          <strong>{{compare.version}}</strong>&nbsp;<span class="caret"></span>
+        </button>
+        <ul class="versions dropdown-menu open-left">
+          <li class="disabled"><a href="#">{{__ "compare changes to:"}}</a></li>
+          <li class="divider"></li>
+        {{#each versions}}
+          <li class="version"><a href="#">{{this}}</a></li>
+        {{/each}}
+        </ul>
+      </div>
     </div>
+    <div class="clearfix"></div>
+
+    {{#if article.description}}
+      <p>{{{showDiff article.description compare.description "nl2br"}}}</p>
+    {{else}}
+      {{#if compare.description}}
+      <p>{{{showDiff "" compare.description "nl2br"}}}</p>
+      {{/if}}
+    {{/if}}
+
+    <pre class="prettyprint language-html" data-type="{{toLowerCase article.type}}"><code>{{{showDiff article.url compare.url}}}</code></pre>
+
+    {{subTemplate "article-compare-permission" article=article compare=compare}}
+
+    <ul class="nav nav-tabs nav-tabs-examples">
+    {{#each_compare_title article.examples compare.examples}}
+      {{#if typeSame}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#compare-examples-{{../../article.id}}-{{index}}">{{{showDiff source.title compare.title}}}</a>
+        </li>
+      {{/if}}
+
+      {{#if typeIns}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#compare-examples-{{../../article.id}}-{{index}}"><ins>{{{source.title}}}</ins></a>
+        </li>
+      {{/if}}
+
+      {{#if typeDel}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#compare-examples-{{../../article.id}}-{{index}}"><del>{{{compare.title}}}</del></a>
+        </li>
+      {{/if}}
+    {{/each_compare_title}}
+    </ul>
+
+    <div class="tab-content">
+    {{#each_compare_title article.examples compare.examples}}
+
+      {{#if typeSame}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{source.type}}"><code>{{{showDiff source.content compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeIns}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{source.type}}"><code>{{{source.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeDel}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{compare.type}}"><code>{{{compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+    {{/each_compare_title}}
+    </div>
+
+    {{subTemplate "article-compare-param-block" source=article.parameter compare=compare.parameter _hasType=_hasTypeInParameterFields section="parameter"}}
+    {{subTemplate "article-compare-param-block" source=article.success compare=compare.success _hasType=_hasTypeInSuccessFields section="success"}}
+    {{subTemplate "article-compare-param-block" source=article.error compare=compare.error _col1="Name" _hasType=_hasTypeInErrorFields section="error"}}
+
+    {{subTemplate "article-sample-request" article=article id=id}}
+
+  </article>
+</script>
+
+<script id="template-article-compare-permission" type="text/x-handlebars-template">
+  <p>
+  {{__ "Permission:"}}
+  {{#each_compare_list_field article.permission compare.permission field="name"}}
+    {{#if source}}
+      {{#if typeSame}}
+        {{source.name}}
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeIns}}
+        <ins>{{source.name}}</ins>
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeDel}}
+        <del>{{source.name}}</del>
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+    {{else}}
+      {{#if typeSame}}
+        {{compare.name}}
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeIns}}
+        <ins>{{compare.name}}</ins>
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeDel}}
+        <del>{{compare.name}}</del>
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+    {{/if}}
+  {{/each_compare_list_field}}
+  </p>
+</script>
+
+<script id="template-article-compare-param-block" type="text/x-handlebars-template">
+  {{#if source}}
+    {{#each_compare_keys source.fields compare.fields}}
+      {{#if typeSame}}
+        <h2>{{__ source.key}}</h2>
+        <table>
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th style="width: {{#if ../_hasType}}60%{{else}}70%{{/if}}">{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=source.value compare=compare.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+
+      {{#if typeIns}}
+        <h2><ins>{{__ source.key}}</ins></h2>
+        <table class="ins">
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th style="width: {{#if ../_hasType}}60%{{else}}70%{{/if}}">{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=source.value compare=source.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+
+      {{#if typeDel}}
+        <h2><del>{{__ compare.key}}</del></h2>
+        <table class="del">
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th style="width: {{#if ../_hasType}}60%{{else}}70%{{/if}}">{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=compare.value compare=compare.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+    {{/each_compare_keys}}
+
+    {{#if source.examples}}
+    <ul class="nav nav-tabs nav-tabs-examples">
+    {{#each_compare_title source.examples compare.examples}}
+      {{#if typeSame}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#{{../../section}}-compare-examples-{{../../article.id}}-{{index}}">{{{showDiff source.title compare.title}}}</a>
+        </li>
+      {{/if}}
+
+      {{#if typeIns}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#{{../../section}}-compare-examples-{{../../article.id}}-{{index}}"><ins>{{{source.title}}}</ins></a>
+        </li>
+      {{/if}}
+
+      {{#if typeDel}}
+        <li{{#if_eq index compare=0}} class="active"{{/if_eq}}>
+          <a href="#{{../../section}}-compare-examples-{{../../article.id}}-{{index}}"><del>{{{compare.title}}}</del></a>
+        </li>
+      {{/if}}
+    {{/each_compare_title}}
+    </ul>
+
+    <div class="tab-content">
+    {{#each_compare_title source.examples compare.examples}}
+
+      {{#if typeSame}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="{{../../section}}-compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{source.type}}"><code>{{{showDiff source.content compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeIns}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="{{../../section}}-compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{source.type}}"><code>{{{source.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeDel}}
+        <div class="tab-pane{{#if_eq index compare=0}} active{{/if_eq}}" id="{{../../section}}-compare-examples-{{../../article.id}}-{{index}}">
+          <pre class="prettyprint language-{{source.type}}" data-type="{{compare.type}}"><code>{{{compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+    {{/each_compare_title}}
+    </div>
+    {{/if}}
+  {{/if}}
+</script>
+
+<script id="template-article-compare-param-block-body" type="text/x-handlebars-template">
+  <tbody>
+    {{#each_compare_field source compare}}
+      {{#if typeSame}}
+        <tr>
+          <td class="code">
+            {{{splitFill source.field "." "&nbsp;&nbsp;"}}}
+            {{#if source.optional}}
+              {{#if compare.optional}} <span class="label label-optional">{{__ "optional"}}</span>
+              {{else}} <span class="label label-optional label-ins">{{__ "optional"}}</span>
+              {{/if}}
+            {{else}}
+              {{#if compare.optional}} <span class="label label-optional label-del">{{__ "optional"}}</span>{{/if}}
+            {{/if}}
+          </td>
+
+        {{#if source.type}}
+          {{#if compare.type}}
+          <td>{{{showDiff source.type compare.type}}}</td>
+          {{else}}
+          <td>{{{source.type}}}</td>
+          {{/if}}
+        {{else}}
+          {{#if compare.type}}
+          <td>{{{compare.type}}}</td>
+          {{else}}
+            {{#if ../../../../_hasType}}<td></td>{{/if}}
+          {{/if}}
+        {{/if}}
+          <td>
+            {{{showDiff source.description compare.description "nl2br"}}}
+            {{#if source.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{showDiff source.defaultValue compare.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+      {{#if typeIns}}
+        <tr class="ins">
+          <td class="code">
+            {{{splitFill source.field "." "&nbsp;&nbsp;"}}}
+            {{#if source.optional}} <span class="label label-optional label-ins">{{__ "optional"}}</span>{{/if}}
+          </td>
+
+        {{#if source.type}}
+          <td>{{{source.type}}}</td>
+        {{else}}
+          {{{typRowTd}}}
+        {{/if}}
+
+          <td>
+            {{{nl2br source.description}}}
+            {{#if source.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{source.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+      {{#if typeDel}}
+        <tr class="del">
+          <td class="code">
+            {{{splitFill compare.field "." "&nbsp;&nbsp;"}}}
+            {{#if compare.optional}} <span class="label label-optional label-del">{{__ "optional"}}</span>{{/if}}
+          </td>
+
+        {{#if compare.type}}
+          <td>{{{compare.type}}}</td>
+        {{else}}
+          {{{typRowTd}}}
+        {{/if}}
+
+          <td>
+            {{{nl2br compare.description}}}
+            {{#if compare.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{compare.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+    {{/each_compare_field}}
+  </tbody>
+</script>
+
+<div class="container-fluid">
+  <div class="row">
+    <div id="sidenav" class="span2"></div>
+    <div id="content">
+      <div id="project"></div>
+      <div id="header"></div>
+      <div id="sections"></div>
+      <div id="footer"></div>
+      <div id="generator"></div>
+    </div>
+  </div>
 </div>
+
+<div id="loader">
+  <div class="spinner">
+    <div class="spinner-container container1">
+      <div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div>
+    </div>
+    <div class="spinner-container container2">
+      <div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div>
+    </div>
+    <div class="spinner-container container3">
+      <div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div>
+    </div>
+    <p>Loading...</p>
+  </div>
 </div>
-<hr>
+
+<script data-main="main.js" src="vendor/require.min.js"></script>
 </body>
 </html>

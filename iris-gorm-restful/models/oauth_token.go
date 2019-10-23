@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/kataras/golog"
+
 	"../database"
 
 	"github.com/jinzhu/gorm"
@@ -49,5 +51,15 @@ func GetOauthTokenByToken(token string) (ot *OauthToken) {
 func UpdateOauthTokenByUserId(userId uint) (ot *OauthToken) {
 	database.DB.Model(ot).Where("revoked = ?", false).Where("user_id = ?", userId).Updates(map[string]interface{}{"revoked": true})
 
+	return
+}
+
+/**
+ * 删除token
+ */
+func DeleteRequestTokenByToken(token *OauthToken) (err error) {
+	if err := database.DB.Delete(token).Error; err != nil {
+		golog.Error("DeleteRequestTokenByTokenErr: ", err)
+	}
 	return
 }

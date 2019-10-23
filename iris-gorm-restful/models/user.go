@@ -28,8 +28,9 @@ type UserJson struct {
 }
 
 type UserPassword struct {
-	Password string   `json:"password" validate:"required,gte=8,lte=200"`
+	Password string `json:"password" validate:"required,gte=8,lte=200"`
 }
+
 /**
  * 通过 id 获取 user 记录
  * @method GetUserById
@@ -184,7 +185,7 @@ func UserAdminCheckLogin(username string) User {
 func CheckLogin(username, password string) (response Token, status bool, msg string) {
 	user := UserAdminCheckLogin(username)
 	if user.ID == 0 {
-		msg = "用户不存在"
+		msg = "user is not exist"
 		return
 	} else {
 		if ok := bcrypt.Match(password, user.Password); ok {
@@ -210,24 +211,14 @@ func CheckLogin(username, password string) (response Token, status bool, msg str
 
 			response = oauthToken.OauthTokenCreate()
 			status = true
-			msg = "登陆成功"
+			msg = "success"
 
 			return
 		} else {
-			msg = "用户名或密码错误"
+			msg = "error"
 			return
 		}
 	}
-}
-
-/**
-* 用户退出登陆
-* @method UserAdminLogout
-* @param  {[type]} ids string [description]
- */
-func UserAdminLogout(userId uint) bool {
-	ot := UpdateOauthTokenByUserId(userId)
-	return ot.Revoked
 }
 
 /**

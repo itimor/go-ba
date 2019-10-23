@@ -4,9 +4,7 @@ import (
 	"../config"
 )
 
-/**
-*初始化系统 账号 权限 角色
- */
+// 初始化系统 账号 权限 角色
 func CreateSystemData(env string) {
 	// perm := CreateSystemAdminPermission() //初始化权限
 

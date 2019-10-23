@@ -21,11 +21,12 @@ func AuthToken(ctx iris.Context) {
 	token := models.GetOauthTokenByToken(u.Raw) //获取 access_token 信息
 	if token.Revoked || token.ExpressIn < time.Now().Unix() {
 		// ctx.StatusCode(http.StatusUnauthorized)
-		ctx.JSON(controllers.ApiJson{Status: false, Data: "", Msg: "token 已经过期"})
-		ctx.Next()
-
+		ctx.JSON(controllers.ApiJson{Status: false, Data: "", Msg: "Token has expired"})
 		return
 	} else {
+		// unit 转换成 int,再转成 string, 才能被 ctx 接收
+		// b := strconv.Itoa(int(token.UserId))
+		// c := string(b)
 		ctx.Values().Set("auth_user_id", token.UserId)
 	}
 
