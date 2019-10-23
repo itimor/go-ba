@@ -17,6 +17,22 @@ func GetProfile(ctx iris.Context) {
 	_, _ = ctx.JSON(ApiResource(true, user, "success"))
 }
 
+/**
+ * @api {get} api/users/:id GetUser
+ * @apiName GetUser
+ * @apiGroup users
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": true,
+ *       "msg": "sucess",
+ *       "data": {
+ *          "Username": "aaa"
+ *       }
+ *    }
+ *
+ */
 func GetUser(ctx iris.Context) {
 	id, _ := ctx.Params().GetUint("id")
 	user, _ := models.GetUserById(id)
@@ -25,6 +41,36 @@ func GetUser(ctx iris.Context) {
 	_, _ = ctx.JSON(ApiResource(true, user, "success"))
 }
 
+/**
+ * @api {post} api/users CreateUser
+ * @apiName CreateUser
+ * @apiGroup users
+ *
+ * @apiParam {String} username username.
+ * @apiParam {String} password password.
+ * @apiParam {String} avatar avatar.
+ * @apiParam {String} roles []roles.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": true,
+ *       "msg": "sucess",
+ *       "data": {
+ *          "Name": "aaa",
+ *          "avatar": "aaa.jpg",
+ *          "roles": ["test"],
+ *       }
+ *    }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 internal server error
+ *     {
+ *       "status": false,
+ *       "msg": "error",
+ *       "data": null
+ *    }
+ */
 func CreateUser(ctx iris.Context) {
 
 	aul := new(models.UserJson)

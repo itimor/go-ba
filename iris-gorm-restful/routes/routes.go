@@ -29,12 +29,14 @@ func Register(api *iris.Application) {
 
 	v1 := api.Party("/v1", crs).AllowMethods(iris.MethodOptions)
 	{
-		v1.Post("/api/login", controllers.UserLogin)
+		v1.Post("/api/auth/login", controllers.UserLogin)
 		v1.PartyFunc("/api", func(admin router.Party) {
 			admin.Use(middleware.JwtHandler().Serve, middleware.AuthToken)
-			admin.Get("/logout", controllers.UserLogout)
-			admin.Patch("/changePasswd/{id:uint}", controllers.UpdateUserPassword)
 
+			admin.PartyFunc("/auth", func(users router.Party) {
+				admin.Get("/logout", controllers.UserLogout)
+				admin.Patch("/changePasswd/{id:uint}", controllers.UpdateUserPassword)
+			})
 			admin.PartyFunc("/users", func(users router.Party) {
 				users.Get("/", controllers.GetAllUsers)
 				users.Get("/{id:uint}", controllers.GetUser)

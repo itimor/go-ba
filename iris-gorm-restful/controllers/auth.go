@@ -12,7 +12,7 @@ import (
 /**
  * @api {post} api/login UserLogin
  * @apiName UserLogin
- * @apiGroup api
+ * @apiGroup auth
  *
  * @apiParam {String} username username of the User.
  * @apiParam {String} password password of the User.
@@ -57,9 +57,9 @@ func UserLogin(ctx iris.Context) {
 }
 
 /**
- * @api {post} api/logout UserLogout
+ * @api {get} api/logout UserLogout
  * @apiName UserLogout
- * @apiGroup admin
+ * @apiGroup auth
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -85,8 +85,24 @@ func UserLogout(ctx iris.Context) {
 	_, _ = ctx.JSON(ApiResource(true, nil, "success"))
 }
 
+/**
+ * @api {post} api/changePasswd/:id UpdateUserPassword
+ * @apiName UpdateUserPassword
+ * @apiGroup auth
+ *
+ * @apiParam {String} password password of the User.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": true,
+ *       "msg": "sucess",
+ *       "data": : "$2a$10$z97tHB.IzV1zL3ENMPNcIua1GgHgNqkNHskiezZDYr525C"
+ *    }
+ *
+ */
 func UpdateUserPassword(ctx iris.Context) {
-	aul := new(models.UserJson)
+	aul := new(models.UserPassword)
 
 	if err := ctx.ReadJSON(&aul); err != nil {
 		ctx.StatusCode(iris.StatusUnauthorized)
@@ -102,9 +118,9 @@ func UpdateUserPassword(ctx iris.Context) {
 			u, _ := models.UpdateUserPassword(aul.Password, uid)
 			ctx.StatusCode(iris.StatusOK)
 			if u.ID == 0 {
-				_, _ = ctx.JSON(ApiResource(false, u, "error"))
+				_, _ = ctx.JSON(ApiResource(false, u.Password, "error"))
 			} else {
-				_, _ = ctx.JSON(ApiResource(true, u, "success"))
+				_, _ = ctx.JSON(ApiResource(true, u.Password, "success"))
 			}
 		}
 	}

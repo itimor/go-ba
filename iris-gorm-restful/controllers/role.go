@@ -10,6 +10,22 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+/**
+ * @api {get} api/roles/:id GetRole
+ * @apiName GetRole
+ * @apiGroup roles
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": true,
+ *       "msg": "sucess",
+ *       "data": {
+ *          "Name": "test"
+ *       }
+ *    }
+ *
+ */
 func GetRole(ctx iris.Context) {
 	id, _ := ctx.Params().GetUint("id")
 	role, _ := models.GetRoleById(id)
@@ -18,6 +34,35 @@ func GetRole(ctx iris.Context) {
 	_, _ = ctx.JSON(ApiResource(true, role, "success"))
 }
 
+/**
+ * @api {post} api/roles CreateRole
+ * @apiName CreateRole
+ * @apiGroup roles
+ *
+ * @apiParam {String} name name.
+ * @apiParam {String} display_name display_name.
+ * @apiParam {String} desc desc.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "status": true,
+ *       "msg": "sucess",
+ *       "data": {
+ *          "Name": "test",
+ *          "DisplayName": "测试",
+ *          "desc": "test",
+ *       }
+ *    }
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 500 internal server error
+ *     {
+ *       "status": false,
+ *       "msg": "error",
+ *       "data": null
+ *    }
+ */
 func CreateRole(ctx iris.Context) {
 	role := new(models.RoleJson)
 
@@ -38,10 +83,11 @@ func CreateRole(ctx iris.Context) {
 			}
 		} else {
 			u, _ := models.CreateRole(role)
-			ctx.StatusCode(iris.StatusOK)
 			if u.ID == 0 {
-				_, _ = ctx.JSON(ApiResource(false, u, "error"))
+				ctx.StatusCode(iris.StatusInternalServerError)
+				_, _ = ctx.JSON(ApiResource(false, nil, "error"))
 			} else {
+				ctx.StatusCode(iris.StatusOK)
 				_, _ = ctx.JSON(ApiResource(true, u, "success"))
 			}
 		}
