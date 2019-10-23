@@ -24,9 +24,6 @@ func AuthToken(ctx iris.Context) {
 		ctx.JSON(controllers.ApiJson{Status: false, Data: "", Msg: "Token has expired"})
 		return
 	} else {
-		// unit 转换成 int,再转成 string, 才能被 ctx 接收
-		// b := strconv.Itoa(int(token.UserId))
-		// c := string(b)
 		ctx.Values().Set("auth_user_id", token.UserId)
 	}
 

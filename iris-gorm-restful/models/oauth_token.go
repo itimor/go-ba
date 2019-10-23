@@ -49,6 +49,7 @@ func GetOauthTokenByToken(token string) (ot *OauthToken) {
  *@param  {[type]}       user  *OauthToken [description]
  */
 func UpdateOauthTokenByUserId(userId uint) (ot *OauthToken) {
+	ot = new(OauthToken)
 	database.DB.Model(ot).Where("revoked = ?", false).Where("user_id = ?", userId).Updates(map[string]interface{}{"revoked": true})
 
 	return

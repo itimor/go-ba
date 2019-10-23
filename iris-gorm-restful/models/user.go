@@ -222,6 +222,16 @@ func CheckLogin(username, password string) (response Token, status bool, msg str
 }
 
 /**
+* 用户退出登陆
+* @method UserAdminLogout
+* @param  {[type]} ids string [description]
+ */
+func UserAdminLogout(userId uint) string {
+	ot := UpdateOauthTokenByUserId(userId)
+	return ot.Secret
+}
+
+/**
 *创建系统管理员
 *@param role_id uint
 *@return   *models.AdminUserTranform api格式化后的数据格式

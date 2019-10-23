@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"../models"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
 )
 
@@ -73,9 +73,13 @@ func UserLogin(ctx iris.Context) {
  *
  */
 func UserLogout(ctx iris.Context) {
-	u := ctx.Values().Get("jwt").(*jwt.Token)   //获取 token 信息
-	token := models.GetOauthTokenByToken(u.Raw) //获取 access_token 信息
-	models.DeleteRequestTokenByToken(token)
+	// u := ctx.Values().Get("jwt").(*jwt.Token)   //获取 token 信息
+	// token := models.GetOauthTokenByToken(u.Raw) //获取 access_token 信息
+	// models.DeleteRequestTokenByToken(token)
+
+	aui, _ := ctx.Values().GetUint("auth_user_id")
+	fmt.Println(aui)
+	models.UserAdminLogout(aui)
 
 	ctx.StatusCode(http.StatusOK)
 	_, _ = ctx.JSON(ApiResource(true, nil, "success"))
