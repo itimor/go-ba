@@ -14,8 +14,11 @@ import (
  * @apiName UserLogin
  * @apiGroup auth
  *
- * @apiParam {String} username username of the User.
- * @apiParam {String} password password of the User.
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "username": "admin",
+ *       "password": "admin"
+ *     }
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -61,14 +64,17 @@ func UserLogin(ctx iris.Context) {
  * @apiName UserLogout
  * @apiGroup auth
  *
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE4MjkyMDgsImlhdCI6MTU3MTgyNTYwOH0.95H2py7V_zNiqjTxq4lV0Plfx1P32n6D-Lhmi1CoLOk"
+ *     }
+ *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *       "status": true,
  *       "msg": "sucess",
- *       "data": {
- *          "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE4MTc5MTAsImlhdCI6MTU3MTgxNDMxMH0.5dAz2Fcfd1diaXzYONaehLB5tbf7Nyfa1HUGO3P4qew"
- *       }
+ *       "data": nul
  *    }
  *
  */
@@ -90,7 +96,15 @@ func UserLogout(ctx iris.Context) {
  * @apiName UpdateUserPassword
  * @apiGroup auth
  *
- * @apiParam {String} password password of the User.
+ * @apiHeaderExample {json} Header-Example:
+ *     {
+ *       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzE4MjkyMDgsImlhdCI6MTU3MTgyNTYwOH0.95H2py7V_zNiqjTxq4lV0Plfx1P32n6D-Lhmi1CoLOk"
+ *     }
+ *
+ * @apiParamExample {json} Request-Example:
+ *     {
+ *       "password": "admin"
+ *     }
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK

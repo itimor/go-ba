@@ -4,7 +4,6 @@
     "description": "iris restful api 初试",
     "title": "iris-gorm-restful",
     "url" : "http://127.0.0.1:8000/v1/",
-    "sampleUrl" : "http://127.0.0.1:8000/v1/",
     "header": {
       "title": "gogobar"
     },
